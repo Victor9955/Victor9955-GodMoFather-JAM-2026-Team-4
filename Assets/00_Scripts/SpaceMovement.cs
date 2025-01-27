@@ -1,11 +1,15 @@
+using DG.Tweening;
 using UnityEngine;
 
 public class SpaceMovement : MonoBehaviour
 {
     [SerializeField] private float lookSensitivity;
     [SerializeField] private float moveSpeed;
+    [SerializeField] private float rotateAngle;
+    [SerializeField] private float rotateSpeed;
 
     private InputSystem_Actions m_InputActions;
+    [SerializeField] private Transform m_ship;
     private Vector2 _lookInput;
     private Vector2 _moveInput;
 
@@ -24,16 +28,19 @@ public class SpaceMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Vector3 movementZ = _moveInput.y * transform.forward * moveSpeed;
-        Vector3 movementX = _moveInput.x * transform.right * moveSpeed;
+        Vector3 movementZ = _moveInput.y * transform.forward * moveSpeed * Time.fixedDeltaTime;
+        Vector3 movementX = _moveInput.x * transform.right * moveSpeed * Time.fixedDeltaTime;
         Vector3 movement = movementZ + movementX;
 
         transform.position += movement;
 
         Vector3 euleurAngle = transform.eulerAngles;
-        euleurAngle.x -= _lookInput.y * lookSensitivity;
-        euleurAngle.y += _lookInput.x * lookSensitivity;
+        euleurAngle.x -= _lookInput.y * lookSensitivity * Time.fixedDeltaTime;
+        euleurAngle.y += _lookInput.x * lookSensitivity * Time.fixedDeltaTime;
         transform.rotation = Quaternion.Euler(euleurAngle);
+        Vector3 rotateTo = m_ship.localEulerAngles;
+        rotateTo.z = -_moveInput.x * rotateAngle;
+        m_ship.DOLocalRotate(rotateTo, rotateSpeed);
     }
 
     private void ReadInput()

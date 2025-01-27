@@ -1023,8 +1023,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 595f79e4a5f821246991e34c65ece242, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lookSensitivity: 0.1
-  moveSpeed: 2
+  lookSensitivity: 10
+  moveSpeed: 200
+  rotateAngle: 25
+  rotateSpeed: 0.25
+  m_ship: {fileID: 1169084556}
 --- !u!1001 &1943141464
 PrefabInstance:
   m_ObjectHideFlags: 0

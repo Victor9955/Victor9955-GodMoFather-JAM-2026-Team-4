@@ -164,7 +164,7 @@ public static class Serialization
     public static string DeserializeString(byte[] byteArray, ref int offset)
     {
         uint length = DeserializeU32(byteArray, ref offset);
-        string value = Encoding.UTF8.GetString(byteArray, offset, (int)length);
+        string value = Encoding.UTF8.GetString(byteArray, offset, (int)length - 1);
         offset += (int)length;
         return value;
     }

@@ -9,7 +9,7 @@ public class NetworkServer : MonoBehaviour
     private ENet6.Host enetHost = null;
     private ENet6.Peer? serverPeer = null;
 
-    List<PacketBuilder> playersPacketBuilder = new List<PacketBuilder>();
+    Dictionary<ENet6.Peer,PacketBuilder> playersPacketBuilder = new();
 
     public bool CreateServer(string addressString)
     {
@@ -57,7 +57,6 @@ public class NetworkServer : MonoBehaviour
 
                     case ENet6.EventType.Connect:
                         Debug.Log("Connect");
-                        playersPacketBuilder.Add(new PacketBuilder(evt.Peer, 0));
                         break;
 
                     case ENet6.EventType.Disconnect:
@@ -69,7 +68,7 @@ public class NetworkServer : MonoBehaviour
                         Debug.Log("Receive");
                         byte[] buffer = new byte[1024];
                         evt.Packet.CopyTo(buffer);
-                        HandleMessage(buffer);
+                        HandleMessage(evt.Peer,buffer);
                         break;
 
                     case ENet6.EventType.Timeout:
@@ -81,17 +80,18 @@ public class NetworkServer : MonoBehaviour
         }
     }
 
-    private void HandleMessage(byte[] buffer)
+    private void HandleMessage(Peer peer, byte[] buffer)
     {
         int offset = 0;
         Opcode opcode = (Opcode)Serialization.DeserializeU8(buffer, ref offset);
         switch (opcode)
         {
-            case Opcode.Test:
-                foreach (PacketBuilder p in playersPacketBuilder)
-                {
-                    p.SendPacket(new Position(Serialization.DeserializeVector3(buffer, ref offset)));
-                }
+            case Opcode.OnClientConnect:
+                playersPacketBuilder.Add(peer, new PacketBuilder(peer, 0));
+                ClientConnect response = new();
+                response.Deserialize(buffer, ref offset);
+                Debug.Log(response.playerName);
+                playersPacketBuilder[peer].SendPacket(new ServerConnectResponse(playersPacketBuilder.Count, Vector3.one));
                 break;
         }
     }

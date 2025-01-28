@@ -1,4 +1,6 @@
 public enum Opcode : byte
 {
-    Test
+    OnClientConnect,
+    OnClientConnectResponse,
+    OnOtherClientConnect
 }

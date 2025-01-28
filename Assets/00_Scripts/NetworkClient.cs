@@ -1,15 +1,21 @@
+using Cinemachine;
 using ENet6;
 using System;
 using UnityEngine;
 
-public class NetworkCore : MonoBehaviour
+public class NetworkClient : MonoBehaviour
 {
     private ENet6.Host enetHost = null;
     private ENet6.Peer? serverPeer = null;
 
+
+    int ownPlayerNumber;
     PacketBuilder packetBuilder = null;
 
-    [SerializeField] Transform player;
+    [SerializeField] CinemachineVirtualCamera virtualCamera;
+    [SerializeField] GameObject client;
+    [SerializeField] GameObject otherClients;
+    [SerializeField] ClientGlobalInfo clientInfo;
 
     public bool Connect(string addressString)
     {
@@ -38,6 +44,8 @@ public class NetworkCore : MonoBehaviour
             ENet6.Event evt = new ENet6.Event();
             if (enetHost.Service(100, out evt) > 0)
             {
+                packetBuilder = new PacketBuilder(serverPeer.Value, 0);
+                packetBuilder.SendPacket(new ClientConnect(clientInfo.playerName,clientInfo.skinNum));
                 // Nous avons un événement, la connexion a soit pu s'effectuer (ENET_EVENT_TYPE_CONNECT) soit échoué (ENET_EVENT_TYPE_DISCONNECT)
                 break; //< On sort de la boucle
             }
@@ -59,7 +67,6 @@ public class NetworkCore : MonoBehaviour
             throw new Exception("Failed to initialize ENet");
 
         Connect("localhost");
-        packetBuilder = new PacketBuilder(serverPeer.Value, 0);
     }
     private void OnApplicationQuit()
     {
@@ -69,8 +76,6 @@ public class NetworkCore : MonoBehaviour
 
     void FixedUpdate()
     {
-        packetBuilder.SendPacket(new Position(player.position));
-
         ENet6.Event evt = new ENet6.Event();
         if (enetHost.Service(0, out evt) > 0)
         {
@@ -112,9 +117,22 @@ public class NetworkCore : MonoBehaviour
         Opcode opcode = (Opcode)Serialization.DeserializeU8(buffer,ref offset);
         switch (opcode)
         {
-            case Opcode.Test:
-                player.transform.position = Serialization.DeserializeVector3(buffer, ref offset);
+            case Opcode.OnClientConnectResponse:
+            {
+                ServerConnectResponse response = new();
+                response.Deserialize(buffer, ref offset);
+                ownPlayerNumber = response.playerNum;
+                GameObject player = Instantiate(client, response.playerStartPos, Quaternion.identity);
+                player.GetComponent<ClientSkinLoader>().LoadSkin(clientInfo.skinNum);
+                virtualCamera.Follow = player.transform;
                 break;
+            }
+
+            case Opcode.OnOtherClientConnect:
+            {
+                break;
+            }
+                
         }
     }
 }

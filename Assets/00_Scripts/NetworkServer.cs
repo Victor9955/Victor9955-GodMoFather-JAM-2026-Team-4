@@ -1,5 +1,7 @@
 using ENet6;
+using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class NetworkServer : MonoBehaviour
@@ -7,9 +9,11 @@ public class NetworkServer : MonoBehaviour
     private ENet6.Host enetHost = null;
     private ENet6.Peer? serverPeer = null;
 
+    List<PacketBuilder> playersPacketBuilder = new List<PacketBuilder>();
+
     public bool CreateServer(string addressString)
     {
-        ENet6.Address address = Address.BuildAny(AddressType.Any);
+        ENet6.Address address = Address.BuildAny(AddressType.IPv6);
         address.Port = 14769;
 
         Debug.Log("Creating server : " + address.GetIP());
@@ -19,7 +23,7 @@ public class NetworkServer : MonoBehaviour
             enetHost.Dispose();
 
         enetHost = new ENet6.Host();
-        enetHost.Create(address.Type, address, 10, 0);
+        enetHost.Create(AddressType.Any, address, 10, 0);
 
         return true;
     }
@@ -53,6 +57,7 @@ public class NetworkServer : MonoBehaviour
 
                     case ENet6.EventType.Connect:
                         Debug.Log("Connect");
+                        playersPacketBuilder.Add(new PacketBuilder(evt.Peer, 0));
                         break;
 
                     case ENet6.EventType.Disconnect:
@@ -62,6 +67,9 @@ public class NetworkServer : MonoBehaviour
 
                     case ENet6.EventType.Receive:
                         Debug.Log("Receive");
+                        byte[] buffer = new byte[1024];
+                        evt.Packet.CopyTo(buffer);
+                        HandleMessage(buffer);
                         break;
 
                     case ENet6.EventType.Timeout:
@@ -70,6 +78,21 @@ public class NetworkServer : MonoBehaviour
                 }
             }
             while (enetHost.CheckEvents(out evt) > 0);
+        }
+    }
+
+    private void HandleMessage(byte[] buffer)
+    {
+        int offset = 0;
+        Opcode opcode = (Opcode)Serialization.DeserializeU8(buffer, ref offset);
+        switch (opcode)
+        {
+            case Opcode.Test:
+                foreach (PacketBuilder p in playersPacketBuilder)
+                {
+                    p.SendPacket(new Position(Serialization.DeserializeVector3(buffer, ref offset)));
+                }
+                break;
         }
     }
 }

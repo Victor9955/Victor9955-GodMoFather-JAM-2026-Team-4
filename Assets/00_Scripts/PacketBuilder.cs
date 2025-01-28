@@ -1,5 +1,6 @@
 using ENet6;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class PacketBuilder
 {
@@ -12,11 +13,9 @@ public class PacketBuilder
         channelID = m_channelID;
     }
 
-    public void SendPacket<T>() where T : struct , ISerializeInterface
+    public void SendPacket<T>(T packet) where T : struct , ISerializeInterface
     {
         List<byte> byteArray = new List<byte>();
-
-        T packet = new T();
 
         Serialization.SerializeU8(byteArray, (byte)packet.opcode);
         packet.Serialize(byteArray);
@@ -32,14 +31,21 @@ struct Position : ISerializeInterface
 {
     public Opcode opcode { get => Opcode.Test; }
 
+    public Vector3 position;
+
+    public Position(Vector3 m_position)
+    {
+        position = m_position;
+    }
+
     public void Serialize(List<byte> byteArray)
     {
-
+        Serialization.SerializeVector3(byteArray, position);
     }
 
     public void Deserialize(byte[] byteArray, ref int offset)
     {
-
+        Debug.Log(Serialization.DeserializeVector3(byteArray,ref offset));
     }
 
 }

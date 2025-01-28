@@ -40,10 +40,6 @@ public class SpaceMovement : MonoBehaviour
         m_ship.DOLocalRotate(rotateTo, rotateSpeed);
     }
 
-    private void FixedUpdate()
-    {
-    }
-
     private void ReadInput()
     {
         _moveInput = m_InputActions.Player.Move.ReadValue<Vector2>();

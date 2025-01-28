@@ -7,6 +7,10 @@ public class NetworkCore : MonoBehaviour
     private ENet6.Host enetHost = null;
     private ENet6.Peer? serverPeer = null;
 
+    PacketBuilder packetBuilder = null;
+
+    [SerializeField] Transform player;
+
     public bool Connect(string addressString)
     {
         ENet6.Address address = new ENet6.Address();
@@ -55,15 +59,18 @@ public class NetworkCore : MonoBehaviour
             throw new Exception("Failed to initialize ENet");
 
         Connect("localhost");
+        packetBuilder = new PacketBuilder(serverPeer.Value, 0);
     }
     private void OnApplicationQuit()
     {
         ENet6.Library.Deinitialize();
     }
 
-    // FixedUpdate est appelé à chaque Tick (réglé dans le projet)
+
     void FixedUpdate()
     {
+        packetBuilder.SendPacket(new Position(player.position));
+
         ENet6.Event evt = new ENet6.Event();
         if (enetHost.Service(0, out evt) > 0)
         {
@@ -85,6 +92,9 @@ public class NetworkCore : MonoBehaviour
                         break;
 
                     case ENet6.EventType.Receive:
+                        byte[] buffer = new byte[1024];
+                        evt.Packet.CopyTo(buffer);
+                        HandleMessage(buffer);
                         Debug.Log("Receive");
                         break;
 
@@ -94,6 +104,17 @@ public class NetworkCore : MonoBehaviour
                 }
             }
             while (enetHost.CheckEvents(out evt) > 0);
+        }
+    }
+    private void HandleMessage(byte[] buffer)
+    {
+        int offset = 0;
+        Opcode opcode = (Opcode)Serialization.DeserializeU8(buffer,ref offset);
+        switch (opcode)
+        {
+            case Opcode.Test:
+                player.transform.position = Serialization.DeserializeVector3(buffer, ref offset);
+                break;
         }
     }
 }

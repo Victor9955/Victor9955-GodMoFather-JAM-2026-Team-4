@@ -27,38 +27,42 @@ public class PacketBuilder
     }
 }
 
-struct ClientConnect : ISerializeInterface
+struct ClientInitData : ISerializeInterface
 {
-    public Opcode opcode { get => Opcode.OnClientConnect; }
+    public Opcode opcode => Opcode.OnClientConnect;
 
     public string playerName;
-    public byte skinNumber;
-    public ClientConnect(string m_playerName, int m_skinNumber)
+    public byte skinId;
+    public byte matId;
+    public ClientInitData(string m_playerName, int m_skinNumber, int m_matNumber)
     {
         playerName = m_playerName;
-        skinNumber = (byte)m_skinNumber;
+        skinId = (byte)m_skinNumber;
+        matId = (byte)m_matNumber;
     }
 
     public void Serialize(List<byte> byteArray)
     {
         Serialization.SerializeString(byteArray, playerName);
-        Serialization.SerializeU8(byteArray, skinNumber);
+        Serialization.SerializeU8(byteArray, skinId);
+        Serialization.SerializeU8(byteArray, matId);
     }
 
     public void Deserialize(byte[] byteArray, ref int offset)
     {
         playerName = Serialization.DeserializeString(byteArray,ref offset);
-        skinNumber = Serialization.DeserializeU8(byteArray,ref offset);
+        skinId = Serialization.DeserializeU8(byteArray,ref offset);
+        matId = Serialization.DeserializeU8(byteArray,ref offset);
     }
 }
 
-struct ServerConnectResponse : ISerializeInterface
+struct ConnectServerInitData : ISerializeInterface
 {
-    public Opcode opcode { get => Opcode.OnClientConnectResponse; }
+    public Opcode opcode => Opcode.OnClientConnectResponse;
 
     public byte playerNum;
     public Vector3 playerStartPos;
-    public ServerConnectResponse(int m_playerNum, Vector3 m_playerStartPos)
+    public ConnectServerInitData(int m_playerNum, Vector3 m_playerStartPos)
     {
         playerNum = (byte)m_playerNum;
         playerStartPos = m_playerStartPos;
@@ -75,4 +79,30 @@ struct ServerConnectResponse : ISerializeInterface
         playerNum = Serialization.DeserializeU8(byteArray, ref offset);
         playerStartPos = Serialization.DeserializeVector3(byteArray, ref offset);
     }
+}
+
+struct InitData : ISerializeInterface
+{
+    public Opcode opcode => Opcode.OnOtherClientConnect;
+    public ClientInitData clientInitData;
+    public ConnectServerInitData serverClientInitData;
+
+    public InitData(ClientInitData m_clientInitData, ConnectServerInitData m_serverClientInitData)
+    {
+        clientInitData = m_clientInitData;
+        serverClientInitData = m_serverClientInitData;
+    }
+
+    public void Serialize(List<byte> byteArray)
+    {
+        clientInitData.Serialize(byteArray);
+        serverClientInitData.Serialize(byteArray);
+    }
+
+    public void Deserialize(byte[] byteArray, ref int offset)
+    {
+        clientInitData.Deserialize(byteArray, ref offset);
+        serverClientInitData.Deserialize(byteArray, ref offset);
+    }
+
 }

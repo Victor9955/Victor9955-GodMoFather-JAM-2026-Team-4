@@ -3,13 +3,12 @@ using UnityEngine;
 
 public class ClientSkinLoader : MonoBehaviour
 {
-    [SerializeField] List<GameObject> skins;
-    public void LoadSkin(int skinId)
+    [SerializeField] ClientGlobalInfo clientInfo;
+    [SerializeField] Transform ancor;
+    public void LoadSkin(int skinId, int matId)
     {
-        foreach (GameObject t in skins)
-        {
-            t.SetActive(false);
-        }
-        skins[skinId].SetActive(true);
+        Debug.Log(skinId + " " + matId);
+        GameObject obj = Instantiate(clientInfo.skinsPrefab[skinId], ancor);
+        obj.GetComponent<MeshRenderer>().material = clientInfo.materials[matId];
     }
 }

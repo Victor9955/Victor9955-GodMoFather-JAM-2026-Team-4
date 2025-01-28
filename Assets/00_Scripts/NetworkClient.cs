@@ -1,6 +1,8 @@
 using Cinemachine;
 using ENet6;
+using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class NetworkClient : MonoBehaviour
@@ -12,9 +14,11 @@ public class NetworkClient : MonoBehaviour
     int ownPlayerNumber;
     PacketBuilder packetBuilder = null;
 
+    Dictionary<uint,InitData> playersInitData = new();
+
     [SerializeField] CinemachineVirtualCamera virtualCamera;
     [SerializeField] GameObject client;
-    [SerializeField] GameObject otherClients;
+    [SerializeField] GameObject otherClient;
     [SerializeField] ClientGlobalInfo clientInfo;
 
     public bool Connect(string addressString)
@@ -45,7 +49,7 @@ public class NetworkClient : MonoBehaviour
             if (enetHost.Service(100, out evt) > 0)
             {
                 packetBuilder = new PacketBuilder(serverPeer.Value, 0);
-                packetBuilder.SendPacket(new ClientConnect(clientInfo.playerName,clientInfo.skinNum));
+                packetBuilder.SendPacket(new ClientInitData(clientInfo.playerName,clientInfo.skinId, clientInfo.matId));
                 // Nous avons un événement, la connexion a soit pu s'effectuer (ENET_EVENT_TYPE_CONNECT) soit échoué (ENET_EVENT_TYPE_DISCONNECT)
                 break; //< On sort de la boucle
             }
@@ -115,24 +119,31 @@ public class NetworkClient : MonoBehaviour
     {
         int offset = 0;
         Opcode opcode = (Opcode)Serialization.DeserializeU8(buffer,ref offset);
+        Debug.Log("Opcode" + opcode.ToString());
         switch (opcode)
         {
             case Opcode.OnClientConnectResponse:
             {
-                ServerConnectResponse response = new();
-                response.Deserialize(buffer, ref offset);
-                ownPlayerNumber = response.playerNum;
-                GameObject player = Instantiate(client, response.playerStartPos, Quaternion.identity);
-                player.GetComponent<ClientSkinLoader>().LoadSkin(clientInfo.skinNum);
+                ConnectServerInitData responseFromConnect = new();
+                responseFromConnect.Deserialize(buffer, ref offset);
+                ownPlayerNumber = responseFromConnect.playerNum;
+                GameObject player = Instantiate(client, responseFromConnect.playerStartPos, Quaternion.identity);
+                player.GetComponent<ClientSkinLoader>().LoadSkin(clientInfo.skinId, clientInfo.matId);
                 virtualCamera.Follow = player.transform;
+                virtualCamera.LookAt = player.transform;
                 break;
             }
 
             case Opcode.OnOtherClientConnect:
             {
+                InitData dataFromServer = new();
+                dataFromServer.Deserialize(buffer, ref offset);
+                GameObject player = Instantiate(otherClient, dataFromServer.serverClientInitData.playerStartPos, Quaternion.identity);
+                player.GetComponent<ClientSkinLoader>().LoadSkin((int)dataFromServer.clientInitData.skinId, (int)dataFromServer.clientInitData.matId);
+                player.GetComponent<ClientNameLoader>().LoadName(dataFromServer.clientInitData.playerName);
+                playersInitData.Add(dataFromServer.serverClientInitData.playerNum, dataFromServer);
                 break;
             }
-                
         }
     }
 }

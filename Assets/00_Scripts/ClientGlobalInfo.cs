@@ -1,3 +1,5 @@
+using NUnit.Framework;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,15 +8,14 @@ using UnityEngine.UI;
 public class ClientGlobalInfo : ScriptableObject
 {
     public string playerName;
-    public int skinNum;
+    public int skinId;
+    public int matId;
+
+    public List<GameObject> skinsPrefab;
+    public List<Material> materials;
 
     public void SetName(TextMeshProUGUI inputField)
     {
         playerName = inputField.text;
-    }
-
-    public void SetSkin(TextMeshProUGUI inputField)
-    {
-        skinNum = int.Parse(inputField.text);
     }
 }

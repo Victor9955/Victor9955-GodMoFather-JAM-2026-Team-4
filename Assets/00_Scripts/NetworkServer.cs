@@ -4,12 +4,17 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+class ServerClientData
+{
+    public PacketBuilder packetBuilder;
+    public InitData initData;
+}
+
 public class NetworkServer : MonoBehaviour
 {
     private ENet6.Host enetHost = null;
-    private ENet6.Peer? serverPeer = null;
 
-    Dictionary<ENet6.Peer,PacketBuilder> playersPacketBuilder = new();
+    Dictionary<uint, ServerClientData> players = new();
 
     public bool CreateServer(string addressString)
     {
@@ -61,7 +66,6 @@ public class NetworkServer : MonoBehaviour
 
                     case ENet6.EventType.Disconnect:
                         Debug.Log("Disconnect");
-                        serverPeer = null;
                         break;
 
                     case ENet6.EventType.Receive:
@@ -87,11 +91,22 @@ public class NetworkServer : MonoBehaviour
         switch (opcode)
         {
             case Opcode.OnClientConnect:
-                playersPacketBuilder.Add(peer, new PacketBuilder(peer, 0));
-                ClientConnect response = new();
-                response.Deserialize(buffer, ref offset);
-                Debug.Log(response.playerName);
-                playersPacketBuilder[peer].SendPacket(new ServerConnectResponse(playersPacketBuilder.Count, Vector3.one));
+                ClientInitData dataFromClient = new();
+                dataFromClient.Deserialize(buffer, ref offset);
+
+                ServerClientData serverClientData = new ServerClientData();
+                serverClientData.packetBuilder = new PacketBuilder(peer, 0);
+                serverClientData.initData.clientInitData = dataFromClient;
+                ConnectServerInitData serverInitData = new ConnectServerInitData((byte)(players.Count + 1), new Vector3Int(UnityEngine.Random.Range(-5, 6), 0, UnityEngine.Random.Range(-5, 6)));
+                serverClientData.initData.serverClientInitData = serverInitData;
+                serverClientData.packetBuilder.SendPacket<ConnectServerInitData>(serverInitData);
+
+                foreach (var player in players.Values)
+                {
+                    player.packetBuilder.SendPacket<InitData>(serverClientData.initData);
+                }
+
+                players.Add(peer.ID, serverClientData);
                 break;
         }
     }

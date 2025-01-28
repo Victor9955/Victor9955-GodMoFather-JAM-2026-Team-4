@@ -1,5 +1,6 @@
-using System.Collections.Generic;
+ using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class SerializeTest : MonoBehaviour
 {
@@ -106,6 +107,7 @@ public class SerializeTest : MonoBehaviour
     void SerializeMultiple(List<byte> byteArray)
     {
         Debug.Log("Serializing multiple types...");
+        Serialization.SerializeString(byteArray, "TestString");
         Serialization.SerializeU8(byteArray, 128);
         Serialization.SerializeI8(byteArray, -64);
         Serialization.SerializeU16(byteArray, 32000);
@@ -113,13 +115,14 @@ public class SerializeTest : MonoBehaviour
         Serialization.SerializeU32(byteArray, 1234567890);
         Serialization.SerializeI32(byteArray, -123456789);
         Serialization.SerializeF32(byteArray, 3.140001f);
-        Serialization.SerializeString(byteArray, "TestString");
         Serialization.SerializeColor(byteArray, new Color(0.1f, 0.2f, 0.3f, 1.0f));
+
+        Debug.Log($"Deserialized Values: UInt8={128}, Int8={-64}, UInt16={32000}, Int16={-16000}, UInt32={1234567890}, Int32={-123456789}, Float={3.140001f}, String={"TestString"}, Color={new Color(0.1f, 0.2f, 0.3f, 1.0f)}");
     }
 
     void DeserializeMultiple(byte[] byteArray, ref int offset)
     {
-        Debug.Log("Deserializing multiple types...");
+        string str = Serialization.DeserializeString(byteArray, ref offset);
         byte u8 = Serialization.DeserializeU8(byteArray, ref offset);
         sbyte i8 = Serialization.DeserializeI8(byteArray, ref offset);
         ushort u16 = Serialization.DeserializeU16(byteArray, ref offset);
@@ -127,7 +130,6 @@ public class SerializeTest : MonoBehaviour
         uint u32 = Serialization.DeserializeU32(byteArray, ref offset);
         int i32 = Serialization.DeserializeI32(byteArray, ref offset);
         float f32 = Serialization.DeserializeF32(byteArray, ref offset);
-        string str = Serialization.DeserializeString(byteArray, ref offset);
         Color color = Serialization.DeserializeColor(byteArray, ref offset);
 
         Debug.Log($"Deserialized Values: UInt8={u8}, Int8={i8}, UInt16={u16}, Int16={i16}, UInt32={u32}, Int32={i32}, Float={f32}, String={str}, Color={color}");

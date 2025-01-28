@@ -14,7 +14,7 @@ public class ClientGlobalInfo : ScriptableObject
     public List<GameObject> skinsPrefab;
     public List<Material> materials;
 
-    public void SetName(TextMeshProUGUI inputField)
+    public void SetName(TMP_InputField inputField)
     {
         playerName = inputField.text;
     }

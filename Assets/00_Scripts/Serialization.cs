@@ -108,8 +108,7 @@ public static class Serialization
 
     public static void SerializeI32(List<byte> byteArray, int value)
     {
-        SerializeU32(byteArray, (uint)
-            value);
+        SerializeU32(byteArray, (uint)value);
     }
 
     public static int DeserializeI32(byte[] byteArray, ref int offset)
@@ -126,7 +125,9 @@ public static class Serialization
 
     public static byte DeserializeU8(byte[] byteArray, ref int offset)
     {
-        return byteArray[offset++];
+        byte value = byteArray[offset];
+        offset += sizeof(byte);
+        return value;
     }
 
     public static void SerializeU16(List<byte> byteArray, ushort value)

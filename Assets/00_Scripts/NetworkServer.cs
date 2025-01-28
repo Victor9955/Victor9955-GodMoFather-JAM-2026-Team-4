@@ -7,7 +7,7 @@ using UnityEngine;
 class ServerClientData
 {
     public PacketBuilder packetBuilder;
-    public InitData initData;
+    public InitData initData = new InitData();
 }
 
 public class NetworkServer : MonoBehaviour
@@ -91,9 +91,9 @@ public class NetworkServer : MonoBehaviour
         switch (opcode)
         {
             case Opcode.OnClientConnect:
-                ClientInitData dataFromClient = new();
+            {
+                ClientInitData dataFromClient = new ();
                 dataFromClient.Deserialize(buffer, ref offset);
-
                 ServerClientData serverClientData = new ServerClientData();
                 serverClientData.packetBuilder = new PacketBuilder(peer, 0);
                 serverClientData.initData.clientInitData = dataFromClient;
@@ -108,6 +108,8 @@ public class NetworkServer : MonoBehaviour
 
                 players.Add(peer.ID, serverClientData);
                 break;
+            }
+                
         }
     }
 }

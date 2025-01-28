@@ -48,8 +48,8 @@ public class NetworkClient : MonoBehaviour
             ENet6.Event evt = new ENet6.Event();
             if (enetHost.Service(100, out evt) > 0)
             {
+                Debug.Log("Successfully connected !");
                 packetBuilder = new PacketBuilder(serverPeer.Value, 0);
-                packetBuilder.SendPacket(new ClientInitData(clientInfo.playerName,clientInfo.skinId, clientInfo.matId));
                 // Nous avons un événement, la connexion a soit pu s'effectuer (ENET_EVENT_TYPE_CONNECT) soit échoué (ENET_EVENT_TYPE_DISCONNECT)
                 break; //< On sort de la boucle
             }
@@ -70,7 +70,10 @@ public class NetworkClient : MonoBehaviour
         if (!ENet6.Library.Initialize())
             throw new Exception("Failed to initialize ENet");
 
-        Connect("localhost");
+        if(Connect("localhost"))
+        {
+            packetBuilder.SendPacket(new ClientInitData(clientInfo.playerName, clientInfo.skinId, clientInfo.matId));
+        }
     }
     private void OnApplicationQuit()
     {
@@ -139,7 +142,7 @@ public class NetworkClient : MonoBehaviour
                 InitData dataFromServer = new();
                 dataFromServer.Deserialize(buffer, ref offset);
                 GameObject player = Instantiate(otherClient, dataFromServer.serverClientInitData.playerStartPos, Quaternion.identity);
-                player.GetComponent<ClientSkinLoader>().LoadSkin((int)dataFromServer.clientInitData.skinId, (int)dataFromServer.clientInitData.matId);
+                player.GetComponent<ClientSkinLoader>().LoadSkin(dataFromServer.clientInitData.skinId, dataFromServer.clientInitData.matId);
                 player.GetComponent<ClientNameLoader>().LoadName(dataFromServer.clientInitData.playerName);
                 playersInitData.Add(dataFromServer.serverClientInitData.playerNum, dataFromServer);
                 break;

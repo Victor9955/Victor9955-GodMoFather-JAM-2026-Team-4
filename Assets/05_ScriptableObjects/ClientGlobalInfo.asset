@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09c1c287686cd844f8f0c4ade0fccf1b, type: 3}
   m_Name: ClientGlobalInfo
   m_EditorClassIdentifier: 
-  playerName: "Test\u200B"
+  playerName: Test
   skinId: 5
   matId: 15
   skinsPrefab:

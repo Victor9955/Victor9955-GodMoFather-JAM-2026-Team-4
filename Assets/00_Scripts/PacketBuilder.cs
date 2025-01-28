@@ -13,7 +13,7 @@ public class PacketBuilder
         channelID = m_channelID;
     }
 
-    public void SendPacket<T>(T packet) where T : struct , ISerializeInterface
+    public void SendPacket<T>(T packet) where T : class , ISerializeInterface
     {
         List<byte> byteArray = new List<byte>();
 
@@ -27,13 +27,15 @@ public class PacketBuilder
     }
 }
 
-struct ClientInitData : ISerializeInterface
+class ClientInitData : ISerializeInterface
 {
     public Opcode opcode => Opcode.OnClientConnect;
 
     public string playerName;
     public byte skinId;
     public byte matId;
+
+    public ClientInitData() { }
     public ClientInitData(string m_playerName, int m_skinNumber, int m_matNumber)
     {
         playerName = m_playerName;
@@ -43,25 +45,27 @@ struct ClientInitData : ISerializeInterface
 
     public void Serialize(List<byte> byteArray)
     {
-        Serialization.SerializeString(byteArray, playerName);
         Serialization.SerializeU8(byteArray, skinId);
         Serialization.SerializeU8(byteArray, matId);
+        Serialization.SerializeString(byteArray, playerName);
     }
 
     public void Deserialize(byte[] byteArray, ref int offset)
     {
-        playerName = Serialization.DeserializeString(byteArray,ref offset);
         skinId = Serialization.DeserializeU8(byteArray,ref offset);
         matId = Serialization.DeserializeU8(byteArray,ref offset);
+        playerName = Serialization.DeserializeString(byteArray, ref offset);
     }
 }
 
-struct ConnectServerInitData : ISerializeInterface
+class ConnectServerInitData : ISerializeInterface
 {
     public Opcode opcode => Opcode.OnClientConnectResponse;
 
     public byte playerNum;
     public Vector3 playerStartPos;
+
+    public ConnectServerInitData() { }
     public ConnectServerInitData(int m_playerNum, Vector3 m_playerStartPos)
     {
         playerNum = (byte)m_playerNum;
@@ -81,12 +85,13 @@ struct ConnectServerInitData : ISerializeInterface
     }
 }
 
-struct InitData : ISerializeInterface
+class InitData : ISerializeInterface
 {
     public Opcode opcode => Opcode.OnOtherClientConnect;
-    public ClientInitData clientInitData;
-    public ConnectServerInitData serverClientInitData;
+    public ClientInitData clientInitData = new ClientInitData();
+    public ConnectServerInitData serverClientInitData = new ConnectServerInitData();
 
+    public InitData() { }
     public InitData(ClientInitData m_clientInitData, ConnectServerInitData m_serverClientInitData)
     {
         clientInitData = m_clientInitData;

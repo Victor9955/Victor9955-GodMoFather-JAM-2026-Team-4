@@ -19,8 +19,9 @@ public static class Serialization
         byte r = DeserializeU8(byteArray, ref offset);
         byte g = DeserializeU8(byteArray, ref offset);
         byte b = DeserializeU8(byteArray, ref offset);
+        byte a = DeserializeU8(byteArray, ref offset);
 
-        return new Color(r, g, b);
+        return new Color(r, g, b, a);
     }
 
     public static void SerializeVector3(List<byte> byteArray, Vector3 value)

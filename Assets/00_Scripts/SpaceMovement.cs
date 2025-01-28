@@ -24,23 +24,24 @@ public class SpaceMovement : MonoBehaviour
     private void Update()
     {
         ReadInput();
-    }
 
-    private void FixedUpdate()
-    {
-        Vector3 movementZ = _moveInput.y * transform.forward * moveSpeed * Time.fixedDeltaTime;
-        Vector3 movementX = _moveInput.x * transform.right * moveSpeed * Time.fixedDeltaTime;
+        Vector3 movementZ = _moveInput.y * transform.forward * moveSpeed * Time.deltaTime;
+        Vector3 movementX = _moveInput.x * transform.right * moveSpeed * Time.deltaTime;
         Vector3 movement = movementZ + movementX;
 
         transform.position += movement;
 
         Vector3 euleurAngle = transform.eulerAngles;
-        euleurAngle.x -= _lookInput.y * lookSensitivity * Time.fixedDeltaTime;
-        euleurAngle.y += _lookInput.x * lookSensitivity * Time.fixedDeltaTime;
+        euleurAngle.x -= _lookInput.y * lookSensitivity * Time.deltaTime;
+        euleurAngle.y += _lookInput.x * lookSensitivity * Time.deltaTime;
         transform.rotation = Quaternion.Euler(euleurAngle);
         Vector3 rotateTo = m_ship.localEulerAngles;
         rotateTo.z = -_moveInput.x * rotateAngle;
         m_ship.DOLocalRotate(rotateTo, rotateSpeed);
+    }
+
+    private void FixedUpdate()
+    {
     }
 
     private void ReadInput()

@@ -2,48 +2,24 @@ using ENet6;
 using System;
 using UnityEngine;
 
-public class NetworkCore : MonoBehaviour
+public class NetworkServer : MonoBehaviour
 {
     private ENet6.Host enetHost = null;
     private ENet6.Peer? serverPeer = null;
 
-    public bool Connect(string addressString)
+    public bool CreateServer(string addressString)
     {
-        ENet6.Address address = new ENet6.Address();
-        if (!address.SetHost(ENet6.AddressType.Any, addressString))
-        {
-            Debug.LogError("failed to resolve \"" + addressString + "\"");
-            return false;
-        }
-
+        ENet6.Address address = Address.BuildAny(AddressType.Any);
         address.Port = 14769;
-        Debug.Log("connecting to " + address.GetIP());
 
+        Debug.Log("Creating server : " + address.GetIP());
 
         // On recréé l'host à la connexion pour l'avoir en IPv4 / IPv6 selon l'adresse
         if (enetHost != null)
             enetHost.Dispose();
 
         enetHost = new ENet6.Host();
-        enetHost.Create(address.Type, 1, 0);
-        serverPeer = enetHost.Connect(address, 0);
-
-        // On laisse la connexion se faire pendant un maximum de 50 * 100ms = 5s
-        for (uint i = 0; i < 50; ++i)
-        {
-            ENet6.Event evt = new ENet6.Event();
-            if (enetHost.Service(100, out evt) > 0)
-            {
-                // Nous avons un événement, la connexion a soit pu s'effectuer (ENET_EVENT_TYPE_CONNECT) soit échoué (ENET_EVENT_TYPE_DISCONNECT)
-                break; //< On sort de la boucle
-            }
-        }
-
-        if (serverPeer.Value.State != PeerState.Connected)
-        {
-            Debug.LogError("connection to \"" + addressString + "\" failed");
-            return false;
-        }
+        enetHost.Create(address.Type, address, 10, 0);
 
         return true;
     }
@@ -54,7 +30,7 @@ public class NetworkCore : MonoBehaviour
         if (!ENet6.Library.Initialize())
             throw new Exception("Failed to initialize ENet");
 
-        Connect("localhost");
+        CreateServer("localhost");
     }
     private void OnApplicationQuit()
     {

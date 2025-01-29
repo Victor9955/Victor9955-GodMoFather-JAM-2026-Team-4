@@ -74,13 +74,13 @@ public static class Serialization
 
     public static void SerializeF32(List<byte> byteArray, float value)
     {
-        uint intRepresentation = BitConverter.ToUInt32(BitConverter.GetBytes(value), 0);
-        SerializeU32(byteArray, intRepresentation);
+        int intRepresentation = BitConverter.ToInt32(BitConverter.GetBytes(value), 0);
+        SerializeI32(byteArray, intRepresentation);
     }
 
     public static float DeserializeF32(byte[] byteArray, ref int offset)
     {
-        uint intRepresentation = DeserializeU32(byteArray, ref offset);
+        int intRepresentation = DeserializeI32(byteArray, ref offset);
         return BitConverter.ToSingle(BitConverter.GetBytes(intRepresentation), 0);
     }
 

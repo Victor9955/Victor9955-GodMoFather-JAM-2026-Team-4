@@ -97,7 +97,7 @@ public class NetworkServer : MonoBehaviour
                 ServerClientData serverClientData = new ServerClientData();
                 serverClientData.packetBuilder = new PacketBuilder(peer, 0);
                 serverClientData.initData.clientInitData = dataFromClient;
-                ConnectServerInitData serverInitData = new ConnectServerInitData((byte)(players.Count + 1), new Vector3Int(UnityEngine.Random.Range(-5, 6), 0, UnityEngine.Random.Range(-5, 6)));
+                ConnectServerInitData serverInitData = new ConnectServerInitData((byte)(players.Count + 1), new Vector3(UnityEngine.Random.Range(-5, 6), 0, UnityEngine.Random.Range(-5, 6)));
                 serverClientData.initData.serverClientInitData = serverInitData;
                 serverClientData.packetBuilder.SendPacket<ConnectServerInitData>(serverInitData);
 

@@ -5,16 +5,23 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+public class  PlayerData
+{
+    InitData initData;
+    Transform playerTransform;
+}
+
+
 public class NetworkClient : MonoBehaviour
 {
     private ENet6.Host enetHost = null;
     private ENet6.Peer? serverPeer = null;
 
 
-    int ownPlayerNumber;
+    PlayerData ownPlayer;
     PacketBuilder packetBuilder = null;
 
-    Dictionary<uint,InitData> playersInitData = new();
+    Dictionary<uint, PlayerData> playersInitData = new();
 
     [SerializeField] CinemachineVirtualCamera virtualCamera;
     [SerializeField] GameObject client;

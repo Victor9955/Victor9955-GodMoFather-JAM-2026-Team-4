@@ -18,4 +18,25 @@ public class ClientGlobalInfo : ScriptableObject
     {
         playerName = inputField.text;
     }
+
+    public void SetShootParticle()
+    {
+        foreach (GameObject go in skinsPrefab)
+        {
+            ShootParticle[] mat = go.GetComponents<ShootParticle>();
+            foreach (ShootParticle c in mat)
+            {
+                DestroyImmediate(c,true);
+            }
+        }
+        foreach (GameObject go in skinsPrefab)
+        {
+            go.AddComponent<ShootParticle>();
+            ParticleSystem[] c = go.GetComponentsInChildren<ParticleSystem>();
+            foreach (var item in c)
+            {
+                item.playOnAwake = false;
+            }
+        }
+    }
 }

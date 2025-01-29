@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 642581682133085512}
   - component: {fileID: 1833914103584686961}
   - component: {fileID: 4732575039883019907}
+  - component: {fileID: 7309611890547826112}
   m_Layer: 0
   m_Name: ClientShip
   m_TagString: Untagged
@@ -65,6 +66,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   clientInfo: {fileID: 11400000, guid: f7b9e831adb112941a9a167599e3f03a, type: 2}
   ancor: {fileID: 19809584035378151}
+  shoot: {fileID: 7309611890547826112}
+--- !u!114 &7309611890547826112
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 943026566312159065}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 450970705d795f24dba436f18d05e27e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shootAction:
+    m_Name: Shoot
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 1e28c091-1b40-40be-978a-f5eb99d14922
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: c8e8cad3-9249-44ec-8d4f-0c896f6f4b6c
+      m_Path: <Mouse>/leftButton
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Shoot
+      m_Flags: 0
+    m_Flags: 0
 --- !u!1 &3751314860066642055
 GameObject:
   m_ObjectHideFlags: 0

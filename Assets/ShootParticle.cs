@@ -9,13 +9,20 @@ public class ShootParticle : MonoBehaviour
 
     public void StartShooting()
     {
-        _coroutine = StartCoroutine(Shoot());
+        if(_coroutine == null)
+        {
+            _coroutine = StartCoroutine(Shoot());
+        }
     }
 
     public void StopShooting()
     {
-        StopCoroutine(_coroutine);
-        _particleSystem.Stop();
+        if(_coroutine != null)
+        {
+            StopCoroutine(_coroutine);
+            _particleSystem.Stop();
+            _coroutine = null;
+        }
     }
 
     IEnumerator Shoot()

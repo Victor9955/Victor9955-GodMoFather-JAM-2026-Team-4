@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 642581682133085512}
+  - component: {fileID: 418069451978063424}
   - component: {fileID: 1833914103584686961}
   - component: {fileID: 4732575039883019907}
   - component: {fileID: 7309611890547826112}
@@ -35,6 +36,18 @@ Transform:
   - {fileID: 19809584035378151}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &418069451978063424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 943026566312159065}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 047997932f07d3f47874cd321175c00e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1833914103584686961
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -51,7 +64,10 @@ MonoBehaviour:
   moveSpeed: 100
   rotateAngle: 25
   rotateSpeed: 0.25
-  m_ship: {fileID: 19809584035378151}
+  networkClient: {fileID: 0}
+  inputManager: {fileID: 418069451978063424}
+  shipAncor: {fileID: 19809584035378151}
+  _moveInput: {x: 0, y: 0}
 --- !u!114 &4732575039883019907
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -79,23 +95,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 450970705d795f24dba436f18d05e27e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shootAction:
-    m_Name: Shoot
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 1e28c091-1b40-40be-978a-f5eb99d14922
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: c8e8cad3-9249-44ec-8d4f-0c896f6f4b6c
-      m_Path: <Mouse>/leftButton
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Shoot
-      m_Flags: 0
-    m_Flags: 0
+  inputManager: {fileID: 418069451978063424}
+  increaseSpeed: 0.75
+  decreaseSpeed: 0.75
+  amount: 1
 --- !u!1 &3751314860066642055
 GameObject:
   m_ObjectHideFlags: 0

@@ -8,26 +8,24 @@ public class SpaceMovement : MonoBehaviour
     [SerializeField] private float rotateAngle;
     [SerializeField] private float rotateSpeed;
     [SerializeField] private NetworkClient networkClient;
-
-    private InputSystem_Actions m_InputActions;
-    [SerializeField] private Transform m_ship;
+    [SerializeField] private InputManager inputManager;
+    [SerializeField] private Transform shipAncor;
     private Vector2 _lookInput;
-    public Vector2 moveInput;
+    public Vector2 _moveInput;
 
     public void Start()
     {
-        m_InputActions = new InputSystem_Actions();
-        m_InputActions.Enable();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        UIManager.Instance.crosshairFollow.ship = transform;
     }
 
     private void Update()
     {
         ReadInput();
 
-        Vector3 movementZ = moveInput.y * transform.forward * moveSpeed * Time.deltaTime;
-        Vector3 movementX = moveInput.x * transform.right * moveSpeed * Time.deltaTime;
+        Vector3 movementZ = _moveInput.y * transform.forward * moveSpeed * Time.deltaTime;
+        Vector3 movementX = _moveInput.x * transform.right * moveSpeed * Time.deltaTime;
         Vector3 movement = movementZ + movementX;
 
         transform.position += movement;
@@ -36,14 +34,14 @@ public class SpaceMovement : MonoBehaviour
         euleurAngle.x -= _lookInput.y * lookSensitivity * Time.deltaTime;
         euleurAngle.y += _lookInput.x * lookSensitivity * Time.deltaTime;
         transform.rotation = Quaternion.Euler(euleurAngle);
-        Vector3 rotateTo = m_ship.localEulerAngles;
-        rotateTo.z = -moveInput.x * rotateAngle;
-        m_ship.DOLocalRotate(rotateTo, rotateSpeed);
+        Vector3 rotateTo = shipAncor.localEulerAngles;
+        rotateTo.z = -_moveInput.x * rotateAngle;
+        shipAncor.DOLocalRotate(rotateTo, rotateSpeed);
     }
 
     private void ReadInput()
     {
-        moveInput = m_InputActions.Player.Move.ReadValue<Vector2>();
-        _lookInput = m_InputActions.Player.Look.ReadValue<Vector2>();
+        _moveInput = inputManager.inputActions.Player.Move.ReadValue<Vector2>();
+        _lookInput = inputManager.inputActions.Player.Look.ReadValue<Vector2>();
     }
 }

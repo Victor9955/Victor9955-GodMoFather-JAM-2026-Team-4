@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class CrosshairFollow : MonoBehaviour
 {
-    [SerializeField] Transform ship;
-    [SerializeField] float amountForward;
+    public Transform ship;
+    public float amountForward;
     RectTransform rect;
 
     private void Start()

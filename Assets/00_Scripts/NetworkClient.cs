@@ -182,7 +182,7 @@ public class NetworkClient : MonoBehaviour
     {
         if (ownPlayer.spaceMovement)
         {
-            packetBuilder.SendPacket(new PlayerInputData(ownPlayer.spaceMovement.moveInput, ownPlayer.playerTransform.rotation));
+            packetBuilder.SendPacket(new PlayerInputData(ownPlayer.spaceMovement._moveInput, ownPlayer.playerTransform.rotation));
         }
     }
 }

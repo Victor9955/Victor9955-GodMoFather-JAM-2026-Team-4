@@ -3,68 +3,62 @@ using UnityEngine.InputSystem;
 
 public class Shoot : MonoBehaviour
 {
-    [SerializeField] InputAction shootAction;
-    [SerializeField] float increaseSpeed = 0.01f;
-    [SerializeField] float decreaseMultiplier = 4f;
+    [SerializeField] InputManager inputManager;
+    [SerializeField] float increaseSpeed = 10f;
+    [SerializeField] float decreaseSpeed = 10f;
     ShootParticle particles;
-    bool isShooting = false;
-    bool oldIsShooting = false;
-    bool canShoot = false;
-    [SerializeField,Range(0, 1)] float size = 1f;
+    bool inputPressed = false;
+
+    [SerializeField,Range(0, 1)] float amount = 1f;
 
     private void Start()
     {
-        shootAction.Enable();
-        shootAction.performed += ShootAction_performed;
-        shootAction.canceled += ShootAction_canceled;
+        inputManager.inputActions.Player.Attack.performed += ShootAction_performed;
+        inputManager.inputActions.Player.Attack.canceled += ShootAction_canceled;
     }
     
-    public void SetParticle(ShootParticle m_particles)
+    public void SetupShoot(ShootParticle m_particles)
     {
         particles = m_particles;
     }
 
     private void ShootAction_canceled(InputAction.CallbackContext obj)
     {
-        isShooting = false;
+        inputPressed = false;
     }
 
     private void ShootAction_performed(InputAction.CallbackContext obj)
     {
-        isShooting = true;
+        inputPressed = true;
     }
 
     private void Update()
     {
-        size = Mathf.Clamp(size + increaseSpeed, 0f, 1f);
-        if(isShooting)
+        
+        if(inputPressed)
         {
-            size = Mathf.Clamp(size - increaseSpeed * decreaseMultiplier, 0f, 1f);
+            amount = Mathf.Clamp01(amount - decreaseSpeed * Time.deltaTime);
+        }
+        else
+        {
+            amount = Mathf.Clamp01(amount + increaseSpeed * Time.deltaTime);
         }
 
-        canShoot = size < 0;
-
-        if (oldIsShooting != canShoot)
-        {
-            oldIsShooting = canShoot;
-            if(!canShoot)
-            {
-                particles.StartShooting();
-            }
-            else
-            {
-                particles.StopShooting();
-            }
-        }
-
-        if(canShoot)
+        if (amount > 0 && inputPressed)
         {
             DoShoot();
+            particles.StartShooting();
         }
+        else
+        {
+            particles.StopShooting();
+        }
+
+        UIManager.Instance.shootScrollbar.size = amount;
     }
 
     public void DoShoot()
     {
-        //TODO : Implement shooting behavior
+        Debug.DrawRay(transform.position, transform.forward * UIManager.Instance.crosshairFollow.amountForward, Color.red, 10f);
     }
 }

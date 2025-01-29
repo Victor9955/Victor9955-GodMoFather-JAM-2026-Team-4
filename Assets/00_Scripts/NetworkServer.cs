@@ -106,6 +106,11 @@ public class NetworkServer : MonoBehaviour
                     player.packetBuilder.SendPacket<InitData>(serverClientData.initData);
                 }
 
+                foreach (var player in players.Values)
+                {
+                    serverClientData.packetBuilder.SendPacket<InitData>(player.initData);
+                }
+
                 players.Add(peer.ID, serverClientData);
                 break;
             }

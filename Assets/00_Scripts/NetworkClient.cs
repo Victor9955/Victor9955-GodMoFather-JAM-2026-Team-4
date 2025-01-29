@@ -136,7 +136,7 @@ public class NetworkClient : MonoBehaviour
             {
                 ConnectServerInitData responseFromConnect = new();
                 responseFromConnect.Deserialize(buffer, ref offset);
-                ownPlayerNumber = responseFromConnect.playerNum;
+                //ownPlayerNumber = responseFromConnect.playerNum;
                 GameObject player = Instantiate(client, responseFromConnect.playerStartPos, Quaternion.identity);
                 player.GetComponent<ClientSkinLoader>().LoadSkin(clientInfo.skinId, clientInfo.matId);
                 virtualCamera.Follow = player.transform;
@@ -151,7 +151,7 @@ public class NetworkClient : MonoBehaviour
                 GameObject player = Instantiate(otherClient, dataFromServer.serverClientInitData.playerStartPos, Quaternion.identity);
                 player.GetComponent<ClientSkinLoader>().LoadSkin(dataFromServer.clientInitData.skinId, dataFromServer.clientInitData.matId);
                 player.GetComponent<ClientNameLoader>().LoadName(dataFromServer.clientInitData.playerName);
-                playersInitData.Add(dataFromServer.serverClientInitData.playerNum, dataFromServer);
+                //playersInitData.Add(dataFromServer.serverClientInitData.playerNum, dataFromServer);
                 break;
             }
         }

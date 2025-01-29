@@ -5,10 +5,11 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class  PlayerData
+public class PlayerData
 {
-    InitData initData;
-    Transform playerTransform;
+    public InitData initData;
+    public Transform playerTransform;
+    public SpaceMovement spaceMovement;
 }
 
 
@@ -27,6 +28,9 @@ public class NetworkClient : MonoBehaviour
     [SerializeField] GameObject client;
     [SerializeField] GameObject otherClient;
     [SerializeField] ClientGlobalInfo clientInfo;
+
+    [SerializeField] private float tickRate = 1 / 30;
+    private float tickTime;
 
     public bool Connect(string addressString)
     {
@@ -79,14 +83,26 @@ public class NetworkClient : MonoBehaviour
 
         if(Connect("localhost"))
         {
+            ownPlayer = new PlayerData() { initData = new InitData() { clientInitData = new ClientInitData() { matId = (byte) clientInfo.matId, playerName = clientInfo.playerName, skinId = (byte) clientInfo.skinId } } };
             packetBuilder.SendPacket(new ClientInitData(clientInfo.playerName, clientInfo.skinId, clientInfo.matId));
         }
     }
+
     private void OnApplicationQuit()
     {
         ENet6.Library.Deinitialize();
     }
 
+    private void Update()
+    {
+        if (Time.time >= tickTime)
+        {
+            tickTime += tickRate;
+
+            //tick reseau d'envoie d'inputs
+            SendPlayerInputs();
+        }
+    }
 
     void FixedUpdate()
     {
@@ -139,6 +155,11 @@ public class NetworkClient : MonoBehaviour
                 //ownPlayerNumber = responseFromConnect.playerNum;
                 GameObject player = Instantiate(client, responseFromConnect.playerStartPos, Quaternion.identity);
                 player.GetComponent<ClientSkinLoader>().LoadSkin(clientInfo.skinId, clientInfo.matId);
+
+                ownPlayer.initData.serverClientInitData = responseFromConnect;
+                ownPlayer.playerTransform = player.transform;
+                ownPlayer.spaceMovement = player.GetComponent<SpaceMovement>();
+
                 virtualCamera.Follow = player.transform;
                 virtualCamera.LookAt = player.transform;
                 break;
@@ -151,9 +172,17 @@ public class NetworkClient : MonoBehaviour
                 GameObject player = Instantiate(otherClient, dataFromServer.serverClientInitData.playerStartPos, Quaternion.identity);
                 player.GetComponent<ClientSkinLoader>().LoadSkin(dataFromServer.clientInitData.skinId, dataFromServer.clientInitData.matId);
                 player.GetComponent<ClientNameLoader>().LoadName(dataFromServer.clientInitData.playerName);
-                //playersInitData.Add(dataFromServer.serverClientInitData.playerNum, dataFromServer);
+                playersInitData.Add(dataFromServer.serverClientInitData.playerNum, new PlayerData() { playerTransform = player.transform, initData = dataFromServer });
                 break;
             }
+        }
+    }
+
+    public void SendPlayerInputs ()
+    {
+        if (ownPlayer.spaceMovement)
+        {
+            packetBuilder.SendPacket(new PlayerInputData(ownPlayer.spaceMovement.moveInput, ownPlayer.playerTransform.rotation));
         }
     }
 }

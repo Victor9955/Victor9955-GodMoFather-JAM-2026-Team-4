@@ -27,7 +27,7 @@ public class PacketBuilder
     }
 }
 
-class ClientInitData : ISerializeInterface
+public class ClientInitData : ISerializeInterface
 {
     public Opcode opcode => Opcode.OnClientConnect;
 
@@ -58,7 +58,38 @@ class ClientInitData : ISerializeInterface
     }
 }
 
-class ConnectServerInitData : ISerializeInterface
+public class PlayerInputData : ISerializeInterface
+{
+    public Opcode opcode => Opcode.PlayerInputsData;
+
+    public float currentTime;
+    public Vector2 moveInput;
+    public Quaternion rotation;
+
+    public PlayerInputData() { }
+    public PlayerInputData(Vector2 moveInput, Quaternion rotation)
+    {
+        currentTime = Time.time;
+        this.moveInput = moveInput;
+        this.rotation = rotation;
+    }
+
+    public void Serialize(List<byte> byteArray)
+    {
+        Serialization.SerializeF32(byteArray, currentTime);
+        Serialization.SerializeVector2(byteArray, moveInput);
+        Serialization.SerializeQuaternion(byteArray, rotation);
+    }
+
+    public void Deserialize(byte[] byteArray, ref int offset)
+    {
+        currentTime = Serialization.DeserializeF32(byteArray,ref offset);
+        moveInput = Serialization.DeserializeVector2(byteArray,ref offset);
+        rotation = Serialization.DeserializeQuaternion(byteArray,ref offset);
+    }
+}
+
+public class ConnectServerInitData : ISerializeInterface
 {
     public Opcode opcode => Opcode.OnClientConnectResponse;
 
@@ -85,7 +116,7 @@ class ConnectServerInitData : ISerializeInterface
     }
 }
 
-class InitData : ISerializeInterface
+public class InitData : ISerializeInterface
 {
     public Opcode opcode => Opcode.OnOtherClientConnect;
     public ClientInitData clientInitData = new ClientInitData();

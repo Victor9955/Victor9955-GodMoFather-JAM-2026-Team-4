@@ -8,12 +8,12 @@ class ServerClientData
 {
     public PacketBuilder packetBuilder;
     public InitData initData = new InitData();
+    public List<PlayerInputData> playerInputsDatas = new List<PlayerInputData>();
 }
 
 public class NetworkServer : MonoBehaviour
 {
     private ENet6.Host enetHost = null;
-
     Dictionary<uint, ServerClientData> players = new();
 
     public bool CreateServer(string addressString)
@@ -112,6 +112,13 @@ public class NetworkServer : MonoBehaviour
                 }
 
                 players.Add(peer.ID, serverClientData);
+                break;
+            }
+
+            case Opcode.PlayerInputsData:
+            {
+                PlayerInputData dataFromPlayer = new ();
+                dataFromPlayer.Deserialize(buffer, ref offset);
                 break;
             }
                 

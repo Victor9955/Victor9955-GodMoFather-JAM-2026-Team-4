@@ -4,12 +4,14 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Recorder.OutputPath;
 
 public class PlayerData
 {
     public InitData initData;
     public Transform playerTransform;
     public SpaceMovement spaceMovement;
+    public Shoot shoot;
 }
 
 
@@ -20,7 +22,7 @@ public class NetworkClient : MonoBehaviour
 
 
     PlayerData ownPlayer;
-    PacketBuilder packetBuilder = null;
+    public PacketBuilder packetBuilder = null;
 
     Dictionary<uint, PlayerData> playersInitData = new();
 
@@ -149,7 +151,6 @@ public class NetworkClient : MonoBehaviour
         switch (opcode)
         {
             case Opcode.OnClientConnectResponse:
-            {
                 ConnectServerInitData responseFromConnect = new();
                 responseFromConnect.Deserialize(buffer, ref offset);
                 //ownPlayerNumber = responseFromConnect.playerNum;
@@ -159,22 +160,21 @@ public class NetworkClient : MonoBehaviour
                 ownPlayer.initData.serverClientInitData = responseFromConnect;
                 ownPlayer.playerTransform = player.transform;
                 ownPlayer.spaceMovement = player.GetComponent<SpaceMovement>();
+                ownPlayer.shoot = player.GetComponent<Shoot>();
+                ownPlayer.shoot.ShootEvent += SendPlayerShoot;
 
                 virtualCamera.Follow = player.transform;
                 virtualCamera.LookAt = player.transform;
                 break;
-            }
 
             case Opcode.OnOtherClientConnect:
-            {
                 InitData dataFromServer = new();
                 dataFromServer.Deserialize(buffer, ref offset);
-                GameObject player = Instantiate(otherClient, dataFromServer.serverClientInitData.playerStartPos, Quaternion.identity);
-                player.GetComponent<ClientSkinLoader>().LoadSkin(dataFromServer.clientInitData.skinId, dataFromServer.clientInitData.matId);
-                player.GetComponent<ClientNameLoader>().LoadName(dataFromServer.clientInitData.playerName);
-                playersInitData.Add(dataFromServer.serverClientInitData.playerNum, new PlayerData() { playerTransform = player.transform, initData = dataFromServer });
+                GameObject otherPlayer = Instantiate(otherClient, dataFromServer.serverClientInitData.playerStartPos, Quaternion.identity);
+                otherPlayer.GetComponent<ClientSkinLoader>().LoadSkin(dataFromServer.clientInitData.skinId, dataFromServer.clientInitData.matId);
+                otherPlayer.GetComponent<ClientNameLoader>().LoadName(dataFromServer.clientInitData.playerName);
+                playersInitData.Add(dataFromServer.serverClientInitData.playerNum, new PlayerData() { playerTransform = otherPlayer.transform, initData = dataFromServer });
                 break;
-            }
         }
     }
 
@@ -183,6 +183,14 @@ public class NetworkClient : MonoBehaviour
         if (ownPlayer.spaceMovement)
         {
             packetBuilder.SendPacket(new PlayerInputData(ownPlayer.spaceMovement._moveInput, ownPlayer.playerTransform.rotation));
+        }
+    }
+
+    public void SendPlayerShoot(Vector3 m_position, Vector3 m_direction)
+    {
+        if (ownPlayer.spaceMovement)
+        {
+            packetBuilder.SendPacket(new ClientSendShoot(m_position,m_direction));
         }
     }
 }

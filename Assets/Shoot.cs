@@ -1,13 +1,18 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class Shoot : MonoBehaviour
 {
     [SerializeField] InputManager inputManager;
+    [SerializeField] NetworkClient networkClient;
     [SerializeField] float increaseSpeed = 10f;
     [SerializeField] float decreaseSpeed = 10f;
+    [SerializeField] float shootRate = 100f;
+    public event Action<Vector3, Vector3> ShootEvent;
     ShootParticle particles;
     bool inputPressed = false;
+    float lastShoot = 0;
 
     [SerializeField,Range(0, 1)] float amount = 1f;
 
@@ -59,6 +64,11 @@ public class Shoot : MonoBehaviour
 
     public void DoShoot()
     {
-        Debug.DrawRay(transform.position, transform.forward * UIManager.Instance.crosshairFollow.amountForward, Color.red, 10f);
+        if(Time.time > lastShoot + shootRate / 60f)
+        {
+            lastShoot = Time.time;
+            ShootEvent?.Invoke(transform.position, transform.forward);
+            //Debug.DrawRay(transform.position, transform.forward * UIManager.Instance.crosshairFollow.amountForward, Color.red, 10f);
+        }
     }
 }

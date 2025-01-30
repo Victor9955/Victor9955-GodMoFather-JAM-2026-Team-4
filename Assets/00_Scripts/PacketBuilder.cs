@@ -142,3 +142,31 @@ public class InitData : ISerializeInterface
     }
 
 }
+
+public class ClientSendShoot : ISerializeInterface
+{
+    public Opcode opcode => Opcode.ClientShoot;
+
+    public Vector3 position;
+    public Vector3 direction;
+
+    public ClientSendShoot() { }
+
+    public ClientSendShoot(Vector3 m_position, Vector3 m_direction)
+    {
+        position = m_position;
+        direction = m_direction;
+    }
+
+    public void Serialize(List<byte> byteArray)
+    {
+        Serialization.SerializeVector3(byteArray, position);
+        Serialization.SerializeVector3(byteArray, position);
+    }
+
+    public void Deserialize(byte[] byteArray, ref int offset)
+    {
+        position = Serialization.DeserializeVector3(byteArray, ref offset);
+        direction = Serialization.DeserializeVector3(byteArray, ref offset);
+    }
+}

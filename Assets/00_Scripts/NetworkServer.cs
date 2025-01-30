@@ -116,11 +116,11 @@ public class NetworkServer : MonoBehaviour
             }
 
             case Opcode.PlayerInputsData:
-            {
-                PlayerInputData dataFromPlayer = new ();
-                dataFromPlayer.Deserialize(buffer, ref offset);
-                break;
-            }
+                {
+                    PlayerInputData dataFromPlayer = new ();
+                    dataFromPlayer.Deserialize(buffer, ref offset);
+                    break;
+                }
                 
         }
     }

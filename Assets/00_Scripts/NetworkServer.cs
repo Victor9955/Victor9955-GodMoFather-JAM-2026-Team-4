@@ -180,8 +180,10 @@ public class NetworkServer : MonoBehaviour
                 players[clientSendShoot.ownPlayerNumber].transform.gameObject.SetActive(false);
                 Vector3 rayPos = players[clientSendShoot.ownPlayerNumber].transform.position;
                 Vector3 rayDir = players[clientSendShoot.ownPlayerNumber].transform.forward;
+                Debug.DrawLine(rayPos, rayDir * 100f , Color.red, 10f);
 
-                if(Physics.Raycast(rayPos, rayDir, out RaycastHit hitInfo))
+
+                if(Physics.Raycast(rayPos, rayDir * 100f, out RaycastHit hitInfo))
                 {
                     byte playerHit = 0;
 

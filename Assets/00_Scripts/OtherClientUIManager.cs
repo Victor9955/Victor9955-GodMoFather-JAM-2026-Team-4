@@ -20,6 +20,6 @@ public class OtherClientUIManager : MonoBehaviour
 
     public void UpdateHealth(ushort health, ushort maxHealth)
     {
-        healthBar.size = health / maxHealth;
+        healthBar.size = (float)health / (float)maxHealth;
     }
 }

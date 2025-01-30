@@ -4,7 +4,6 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.Recorder.OutputPath;
 
 public class PlayerData
 {
@@ -241,7 +240,7 @@ public class NetworkClient : MonoBehaviour
                     serverHealthUpdate.Deserialize(buffer, ref offset);
                     if (serverHealthUpdate.playerNumber == ownPlayer.initData.serverClientInitData.playerNum)
                     {
-                        UIManager.Instance.lifeBar.size = serverHealthUpdate.health / serverHealthUpdate.maxHealth;
+                        UIManager.Instance.lifeBar.size = (float)serverHealthUpdate.health / (float)serverHealthUpdate.maxHealth;
                     }
                     else
                     {

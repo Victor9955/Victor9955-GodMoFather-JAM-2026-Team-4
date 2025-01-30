@@ -3,12 +3,17 @@ using UnityEngine;
 public class RotateToward : MonoBehaviour
 {
     [SerializeField] float amountForward = 200f;
-    [SerializeField] Transform ship;
+    public Transform forward;
     void Start()
     {
-        if(ship != null)
+        
+    }
+
+    private void Update()
+    {
+        if(forward != null)
         {
-            transform.LookAt(transform.parent.parent.parent.position + transform.parent.parent.parent.forward * amountForward);
+            transform.LookAt(forward.position + forward.forward * amountForward);
         }
     }
 }

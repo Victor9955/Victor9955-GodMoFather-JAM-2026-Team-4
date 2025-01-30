@@ -240,7 +240,14 @@ public class NetworkClient : MonoBehaviour
                 {
                     ServerHealthUpdate serverHealthUpdate = new ServerHealthUpdate();
                     serverHealthUpdate.Deserialize(buffer, ref offset);
-                    players[serverHealthUpdate.playerNumber].otherUIManager.UpdateHealth(serverHealthUpdate.health, serverHealthUpdate.maxHealth);
+                    if (serverHealthUpdate.playerNumber == ownPlayer.initData.serverClientInitData.playerNum)
+                    {
+                        UIManager.Instance.lifeBar.size = serverHealthUpdate.health / serverHealthUpdate.maxHealth;
+                    }
+                    else
+                    {
+                        players[serverHealthUpdate.playerNumber].otherUIManager.UpdateHealth(serverHealthUpdate.health, serverHealthUpdate.maxHealth);
+                    }
                     break;
                 }
         }

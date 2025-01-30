@@ -96,11 +96,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputManager: {fileID: 418069451978063424}
-  networkClient: {fileID: 0}
-  increaseSpeed: 10
-  decreaseSpeed: 10
-  shootRate: 100
-  amount: 1
+  increaseSpeed: 0.1
+  decreaseSpeed: 0.1
 --- !u!1 &3751314860066642055
 GameObject:
   m_ObjectHideFlags: 0

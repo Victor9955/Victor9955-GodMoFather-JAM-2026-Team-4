@@ -4917,9 +4917,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3756662777520178988}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.707047, y: -0.009200393, z: -0.009200393, w: 0.707047}
+  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1972487910709877232}
@@ -9799,6 +9799,7 @@ GameObject:
   - component: {fileID: 1972487910709877232}
   - component: {fileID: 5709827444404199806}
   - component: {fileID: 7980029976762078213}
+  - component: {fileID: 8492862134529310880}
   m_Layer: 0
   m_Name: MuzzleFlash
   m_TagString: Untagged
@@ -9816,8 +9817,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 4, y: 4, z: 4}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 3638443602560087308}
   - {fileID: 31082182910312032}
@@ -14626,6 +14627,20 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
+--- !u!114 &8492862134529310880
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6980259576133684760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47fae77c7d3c0154981e34bba5a3a5b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  amountForward: 200
+  ship: {fileID: 0}
 --- !u!1 &7222628775867560472
 GameObject:
   m_ObjectHideFlags: 0

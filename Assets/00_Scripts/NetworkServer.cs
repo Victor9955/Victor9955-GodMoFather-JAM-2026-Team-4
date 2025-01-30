@@ -111,16 +111,20 @@ public class NetworkServer : MonoBehaviour
                     serverClientData.packetBuilder.SendPacket<InitData>(player.initData);
                 }
 
-                players.Add(peer.ID, serverClientData);
+                players.Add(serverClientData.initData.serverClientInitData.playerNum, serverClientData);
                 break;
             }
 
             case Opcode.PlayerInputsData:
-                {
-                    PlayerInputData dataFromPlayer = new ();
-                    dataFromPlayer.Deserialize(buffer, ref offset);
-                    break;
-                }
+                PlayerInputData dataFromPlayer = new ();
+                dataFromPlayer.Deserialize(buffer, ref offset);
+                break;
+
+            case Opcode.ClientShoot:
+                ClientSendShoot clientShoot = new ClientSendShoot();
+                clientShoot.Deserialize(buffer, ref offset);
+
+                break;
                 
         }
     }

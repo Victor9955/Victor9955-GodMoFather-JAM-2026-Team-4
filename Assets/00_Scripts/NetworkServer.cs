@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.FilePathAttribute;
 using static UnityEngine.Analytics.IAnalytic;
 
 class ServerClientData
@@ -11,6 +12,7 @@ class ServerClientData
     public InitData initData = new InitData();
     public List<PlayerInputData> playerInputsDatas = new List<PlayerInputData>();
     public Vector3 Position;
+    public Quaternion Rotation;
     public ushort health = 1000;
     public Transform transform;
 }
@@ -21,7 +23,7 @@ public class NetworkServer : MonoBehaviour
     Dictionary<uint, ServerClientData> players = new();
     [SerializeField] GameObject clientPrefab;
 
-    private float tickDelay = 1/30;
+    private float tickDelay = 1f/60f;
     private float tickTime;
     private ushort damagePerShoot = 1;
     private ushort maxHealth = 1000;
@@ -55,24 +57,26 @@ public class NetworkServer : MonoBehaviour
 
                 PlayerInputData lastPlayerInputs = data.playerInputsDatas[0];
                 data.playerInputsDatas.RemoveAt(0);
-                AdvancePhysics(lastPlayerInputs.moveInput, lastPlayerInputs.moveSpeed, ref data.Position);
+
+                data.transform.rotation = lastPlayerInputs.rotation;
+                AdvancePhysics(lastPlayerInputs.moveInput, data.transform, lastPlayerInputs.moveSpeed, ref data.Position);
+                data.Rotation = lastPlayerInputs.rotation;
+                data.transform.position = data.Position;
 
                 Debug.Log("Server send player positions");
                 foreach (ServerClientData otherDatas in players.Values)
                 {
-                    //if (otherDatas.initData.serverClientInitData.playerNum == data.initData.serverClientInitData.playerNum) continue;
-
-                    ServerToPlayerPosition serverPositionData = new ServerToPlayerPosition(lastPlayerInputs.inputId, lastPlayerInputs.rotation, data.initData.serverClientInitData.playerNum, data.Position);
+                    ServerToPlayerPosition serverPositionData = new ServerToPlayerPosition(lastPlayerInputs.inputId, data.Rotation, data.initData.serverClientInitData.playerNum, data.Position);
                     otherDatas.packetBuilder.SendPacket(serverPositionData);
                 }
             }
         }
     }
 
-    private void AdvancePhysics (Vector2 moveInput, float moveSpeed, ref Vector3 position)
+    private void AdvancePhysics (Vector2 moveInput, Transform transformShip, float moveSpeed, ref Vector3 position)
     {
-        Vector3 movementZ = moveInput.y * transform.forward * moveSpeed * Time.deltaTime;
-        Vector3 movementX = moveInput.x * transform.right * moveSpeed * Time.deltaTime;
+        Vector3 movementZ = moveInput.y * transformShip.forward * moveSpeed * tickDelay;
+        Vector3 movementX = moveInput.x * transformShip.right * moveSpeed * tickDelay;
         Vector3 movement = movementZ + movementX;
 
         position += movement;
@@ -165,7 +169,6 @@ public class NetworkServer : MonoBehaviour
             case Opcode.PlayerInputsData:
                 PlayerInputData dataFromPlayer = new ();
                 dataFromPlayer.Deserialize(buffer, ref offset);
-                players[dataFromPlayer.playerNum].transform.rotation = dataFromPlayer.rotation;
                 players[dataFromPlayer.playerNum].playerInputsDatas.Add(dataFromPlayer);
                 break;
 

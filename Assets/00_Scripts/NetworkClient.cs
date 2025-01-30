@@ -34,7 +34,7 @@ public class NetworkClient : MonoBehaviour
     [SerializeField] GameObject otherClient;
     [SerializeField] ClientGlobalInfo clientInfo;
 
-    private float tickRate = 1 / 30;
+    private float tickRate = 1f / 60f;
     private float tickTime;
 
     public bool Connect(string addressString)
@@ -104,7 +104,7 @@ public class NetworkClient : MonoBehaviour
         {
             tickTime += tickRate;
 
-            ownPlayer.spaceMovement.AdvanceSpaceShip();
+            ownPlayer.spaceMovement.AdvanceSpaceShip(tickRate);
 
             //tick reseau d'envoie d'inputs
             SendPlayerInputs();
@@ -152,10 +152,10 @@ public class NetworkClient : MonoBehaviour
     public void SendPlayerInputs()
     {
         Debug.Log("Send player inputs");
-        PlayerInputData inputData = new PlayerInputData(currentId, ownPlayer.spaceMovement._moveInput, ownPlayer.playerTransform.rotation, ownPlayer.initData.serverClientInitData.playerNum, ownPlayer.spaceMovement.MoveSpeed);
-        currentId++;
+        PlayerInputData inputData = new PlayerInputData(currentId, ownPlayer.spaceMovement.moveInput, ownPlayer.playerTransform.rotation, ownPlayer.initData.serverClientInitData.playerNum, ownPlayer.spaceMovement.MoveSpeed);
         ownPlayer.predictedInput.Add(inputData);
         packetBuilder.SendPacket(inputData);
+        currentId++;
     }
 
     public void SendPlayerShoot()
@@ -212,19 +212,18 @@ public class NetworkClient : MonoBehaviour
 
                     if (positionFromServer.playerNum == ownPlayer.initData.serverClientInitData.playerNum)
                     {
-                        Vector3 previousPlayerPos = positionFromServer.position;
-                        ownPlayer.playerTransform.position = previousPlayerPos;
+                        Debug.Log("PREDICTED CURRENT POSITION : " + ownPlayer.playerTransform.position + " with input ID : " + (currentId - 1));
+                        Debug.Log("ROLL BACK POSITION : " + positionFromServer.position + " with input ID : " + positionFromServer.inputId);
+                        ownPlayer.playerTransform.position = positionFromServer.position;
                         ownPlayer.playerTransform.rotation = positionFromServer.rotation;
 
-                        for (int i = ownPlayer.predictedInput.Count - 1; i > 0; i--)
-                        {
-                            if (ownPlayer.predictedInput[i].inputId < positionFromServer.inputId)
-                                ownPlayer.predictedInput.RemoveAt(i);
-                        }
+                        ownPlayer.predictedInput.RemoveAll(input => input.inputId <= positionFromServer.inputId);
+
 
                         for (int i = 0; i < ownPlayer.predictedInput.Count; i++)
                         {
-                            ownPlayer.spaceMovement.AdvanceSpaceShip(ownPlayer.predictedInput[i].moveInput, ownPlayer.predictedInput[i].rotation);
+                            ownPlayer.spaceMovement.AdvanceSpaceShip(ownPlayer.predictedInput[i].moveInput, ownPlayer.predictedInput[i].rotation, tickRate);
+                            Debug.Log("ADVANCE STEPS : " + ownPlayer.predictedInput[i].inputId + "To position : " + ownPlayer.playerTransform.position);
                         }
                     }
                     else

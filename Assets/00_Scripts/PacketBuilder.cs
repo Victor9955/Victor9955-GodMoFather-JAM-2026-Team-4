@@ -62,30 +62,73 @@ public class PlayerInputData : ISerializeInterface
 {
     public Opcode opcode => Opcode.PlayerInputsData;
 
-    public float currentTime;
+    public uint inputId;
     public Vector2 moveInput;
     public Quaternion rotation;
+    public byte playerNum;
+    public float moveSpeed;
 
     public PlayerInputData() { }
-    public PlayerInputData(Vector2 moveInput, Quaternion rotation)
+    public PlayerInputData(uint inputId ,Vector2 moveInput, Quaternion rotation, int m_playerNum, float moveSpeed)
     {
-        currentTime = Time.time;
+        this.inputId = inputId;
         this.moveInput = moveInput;
         this.rotation = rotation;
+        this.playerNum = (byte)m_playerNum;
+        this.moveSpeed = moveSpeed;
     }
 
     public void Serialize(List<byte> byteArray)
     {
-        Serialization.SerializeF32(byteArray, currentTime);
+        Serialization.SerializeU32(byteArray, inputId);
         Serialization.SerializeVector2(byteArray, moveInput);
         Serialization.SerializeQuaternion(byteArray, rotation);
+        Serialization.SerializeU8(byteArray, playerNum);
+        Serialization.SerializeF32(byteArray, moveSpeed);
     }
 
     public void Deserialize(byte[] byteArray, ref int offset)
     {
-        currentTime = Serialization.DeserializeF32(byteArray,ref offset);
+        inputId = Serialization.DeserializeU32(byteArray,ref offset);
         moveInput = Serialization.DeserializeVector2(byteArray,ref offset);
         rotation = Serialization.DeserializeQuaternion(byteArray,ref offset);
+        playerNum = Serialization.DeserializeU8(byteArray, ref offset);
+        moveSpeed = Serialization.DeserializeF32(byteArray, ref offset);
+    }
+}
+
+public class ServerToPlayerPosition : ISerializeInterface
+{
+    public Opcode opcode => Opcode.FromServerPlayerPosition;
+
+    public uint inputId;
+    public Quaternion rotation;
+    public Vector3 position;
+    public byte playerNum;
+
+    public ServerToPlayerPosition() { }
+    public ServerToPlayerPosition(uint inputId, Quaternion rotation, int m_playerNum, Vector3 position)
+    {
+        this.inputId = inputId;
+        this.rotation = rotation;
+        this.position = position;
+        this.playerNum = (byte)m_playerNum;
+    }
+
+    public void Serialize(List<byte> byteArray)
+    {
+        Serialization.SerializeU32(byteArray, inputId);
+        Serialization.SerializeQuaternion(byteArray, rotation);
+        Serialization.SerializeVector3(byteArray, position);
+        Serialization.SerializeU8(byteArray, playerNum);
+    }
+
+    public void Deserialize(byte[] byteArray, ref int offset)
+    {
+        inputId = Serialization.DeserializeU32(byteArray, ref offset);
+        rotation = Serialization.DeserializeQuaternion(byteArray, ref offset);
+        position = Serialization.DeserializeVector3(byteArray, ref offset);
+        playerNum = Serialization.DeserializeU8(byteArray, ref offset);
     }
 }
 

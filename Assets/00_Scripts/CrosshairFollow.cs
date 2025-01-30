@@ -13,6 +13,9 @@ public class CrosshairFollow : MonoBehaviour
 
     private void FixedUpdate()
     {
-        rect.position = (Vector2)Camera.main.WorldToScreenPoint(ship.position + ship.forward * amountForward);
+        if (ship != null)
+        {
+            rect.position = (Vector2)Camera.main.WorldToScreenPoint(ship.position + ship.forward * amountForward);
+        }
     }
 }

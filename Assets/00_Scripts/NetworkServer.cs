@@ -9,12 +9,16 @@ class ServerClientData
     public PacketBuilder packetBuilder;
     public InitData initData = new InitData();
     public List<PlayerInputData> playerInputsDatas = new List<PlayerInputData>();
+    public Vector3 Position;
 }
 
 public class NetworkServer : MonoBehaviour
 {
     private ENet6.Host enetHost = null;
     Dictionary<uint, ServerClientData> players = new();
+
+    private float tickDelay = 1/30;
+    private float tickTime;
 
     public bool CreateServer(string addressString)
     {
@@ -31,6 +35,42 @@ public class NetworkServer : MonoBehaviour
         enetHost.Create(AddressType.Any, address, 10, 0);
 
         return true;
+    }
+
+    private void Update()
+    {
+        if (Time.time >= tickTime)
+        {
+            tickTime += tickDelay;
+            foreach (ServerClientData data in players.Values)
+            {
+                if (data.playerInputsDatas.Count <= 0)
+                    continue;
+
+                PlayerInputData lastPlayerInputs = data.playerInputsDatas[0];
+                data.playerInputsDatas.RemoveAt(0);
+                AdvancePhysics(lastPlayerInputs.moveInput, lastPlayerInputs.moveSpeed, ref data.Position);
+                
+
+                Debug.Log("Server send player positions");
+                foreach (ServerClientData otherDatas in players.Values)
+                {
+                    //if (otherDatas.initData.serverClientInitData.playerNum == data.initData.serverClientInitData.playerNum) continue;
+
+                    ServerToPlayerPosition serverPositionData = new ServerToPlayerPosition(lastPlayerInputs.inputId, lastPlayerInputs.rotation, data.initData.serverClientInitData.playerNum, data.Position);
+                    data.packetBuilder.SendPacket(serverPositionData);
+                }
+            }
+        }
+    }
+
+    private void AdvancePhysics (Vector2 moveInput, float moveSpeed, ref Vector3 position)
+    {
+        Vector3 movementZ = moveInput.y * transform.forward * moveSpeed * Time.deltaTime;
+        Vector3 movementX = moveInput.x * transform.right * moveSpeed * Time.deltaTime;
+        Vector3 movement = movementZ + movementX;
+
+        position += movement;
     }
 
     // Start is called before the first frame update
@@ -91,7 +131,6 @@ public class NetworkServer : MonoBehaviour
         switch (opcode)
         {
             case Opcode.OnClientConnect:
-            {
                 ClientInitData dataFromClient = new ();
                 dataFromClient.Deserialize(buffer, ref offset);
                 ServerClientData serverClientData = new ServerClientData();
@@ -111,13 +150,14 @@ public class NetworkServer : MonoBehaviour
                     serverClientData.packetBuilder.SendPacket<InitData>(player.initData);
                 }
 
-                players.Add(serverClientData.initData.serverClientInitData.playerNum, serverClientData);
+                serverClientData.Position = serverInitData.playerStartPos;
+                players.Add(serverInitData.playerNum, serverClientData);
                 break;
-            }
 
             case Opcode.PlayerInputsData:
                 PlayerInputData dataFromPlayer = new ();
                 dataFromPlayer.Deserialize(buffer, ref offset);
+                players[dataFromPlayer.playerNum].playerInputsDatas.Add(dataFromPlayer);
                 break;
 
             case Opcode.ClientShoot:

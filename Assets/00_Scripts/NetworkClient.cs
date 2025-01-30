@@ -11,6 +11,7 @@ public class PlayerData
     public InitData initData;
     public Transform playerTransform;
     public SpaceMovement spaceMovement;
+    public List<PlayerInputData> predictedInput = new List<PlayerInputData>();
     public Shoot shoot;
 }
 
@@ -22,7 +23,8 @@ public class NetworkClient : MonoBehaviour
 
 
     PlayerData ownPlayer;
-    public PacketBuilder packetBuilder = null;
+    PacketBuilder packetBuilder = null;
+    uint currentId = 0;
 
     Dictionary<uint, PlayerData> playersInitData = new();
 
@@ -31,7 +33,7 @@ public class NetworkClient : MonoBehaviour
     [SerializeField] GameObject otherClient;
     [SerializeField] ClientGlobalInfo clientInfo;
 
-    [SerializeField] private float tickRate = 1 / 30;
+    private float tickRate = 1 / 30;
     private float tickTime;
 
     public bool Connect(string addressString)
@@ -83,9 +85,9 @@ public class NetworkClient : MonoBehaviour
         if (!ENet6.Library.Initialize())
             throw new Exception("Failed to initialize ENet");
 
-        if(Connect("localhost"))
+        if (Connect("localhost"))
         {
-            ownPlayer = new PlayerData() { initData = new InitData() { clientInitData = new ClientInitData() { matId = (byte) clientInfo.matId, playerName = clientInfo.playerName, skinId = (byte) clientInfo.skinId } } };
+            ownPlayer = new PlayerData() { initData = new InitData() { clientInitData = new ClientInitData() { matId = (byte)clientInfo.matId, playerName = clientInfo.playerName, skinId = (byte)clientInfo.skinId } } };
             packetBuilder.SendPacket(new ClientInitData(clientInfo.playerName, clientInfo.skinId, clientInfo.matId));
         }
     }
@@ -97,9 +99,11 @@ public class NetworkClient : MonoBehaviour
 
     private void Update()
     {
-        if (Time.time >= tickTime)
+        if (Time.time >= tickTime && ownPlayer.spaceMovement != null)
         {
             tickTime += tickRate;
+
+            ownPlayer.spaceMovement.AdvanceSpaceShip();
 
             //tick reseau d'envoie d'inputs
             SendPlayerInputs();
@@ -143,54 +147,92 @@ public class NetworkClient : MonoBehaviour
             while (enetHost.CheckEvents(out evt) > 0);
         }
     }
-    private void HandleMessage(byte[] buffer)
+
+    public void SendPlayerInputs()
     {
-        int offset = 0;
-        Opcode opcode = (Opcode)Serialization.DeserializeU8(buffer,ref offset);
-        Debug.Log("Opcode" + opcode.ToString());
-        switch (opcode)
-        {
-            case Opcode.OnClientConnectResponse:
-                ConnectServerInitData responseFromConnect = new();
-                responseFromConnect.Deserialize(buffer, ref offset);
-                //ownPlayerNumber = responseFromConnect.playerNum;
-                GameObject player = Instantiate(client, responseFromConnect.playerStartPos, Quaternion.identity);
-                player.GetComponent<ClientSkinLoader>().LoadSkin(clientInfo.skinId, clientInfo.matId);
-
-                ownPlayer.initData.serverClientInitData = responseFromConnect;
-                ownPlayer.playerTransform = player.transform;
-                ownPlayer.spaceMovement = player.GetComponent<SpaceMovement>();
-                ownPlayer.shoot = player.GetComponent<Shoot>();
-                ownPlayer.shoot.ShootEvent += SendPlayerShoot;
-
-                virtualCamera.Follow = player.transform;
-                virtualCamera.LookAt = player.transform;
-                break;
-
-            case Opcode.OnOtherClientConnect:
-                InitData dataFromServer = new();
-                dataFromServer.Deserialize(buffer, ref offset);
-                GameObject otherPlayer = Instantiate(otherClient, dataFromServer.serverClientInitData.playerStartPos, Quaternion.identity);
-                otherPlayer.GetComponent<ClientSkinLoader>().LoadSkin(dataFromServer.clientInitData.skinId, dataFromServer.clientInitData.matId);
-                otherPlayer.GetComponent<ClientNameLoader>().LoadName(dataFromServer.clientInitData.playerName);
-                playersInitData.Add(dataFromServer.serverClientInitData.playerNum, new PlayerData() { playerTransform = otherPlayer.transform, initData = dataFromServer });
-                break;
-        }
-    }
-
-    public void SendPlayerInputs ()
-    {
-        if (ownPlayer.spaceMovement)
-        {
-            packetBuilder.SendPacket(new PlayerInputData(ownPlayer.spaceMovement._moveInput, ownPlayer.playerTransform.rotation));
-        }
+        Debug.Log("Send player inputs");
+        PlayerInputData inputData = new PlayerInputData(currentId, ownPlayer.spaceMovement._moveInput, ownPlayer.playerTransform.rotation, ownPlayer.initData.serverClientInitData.playerNum, ownPlayer.spaceMovement.MoveSpeed);
+        currentId++;
+        ownPlayer.predictedInput.Add(inputData);
+        packetBuilder.SendPacket(inputData);
     }
 
     public void SendPlayerShoot(Vector3 m_position, Vector3 m_direction)
     {
         if (ownPlayer.spaceMovement)
         {
-            packetBuilder.SendPacket(new ClientSendShoot(m_position,m_direction));
+            packetBuilder.SendPacket(new ClientSendShoot(m_position, m_direction));
         }
+    }
+
+    private void HandleMessage(byte[] buffer)
+    {
+        int offset = 0;
+        Opcode opcode = (Opcode)Serialization.DeserializeU8(buffer, ref offset);
+        Debug.Log("Opcode" + opcode.ToString());
+        switch (opcode)
+        {
+            case Opcode.OnClientConnectResponse:
+                {
+                    ConnectServerInitData responseFromConnect = new();
+                    responseFromConnect.Deserialize(buffer, ref offset);
+                    //ownPlayerNumber = responseFromConnect.playerNum;
+                    GameObject player = Instantiate(client, responseFromConnect.playerStartPos, Quaternion.identity);
+                    player.GetComponent<ClientSkinLoader>().LoadSkin(clientInfo.skinId, clientInfo.matId);
+
+                    ownPlayer.initData.serverClientInitData = responseFromConnect;
+                    ownPlayer.playerTransform = player.transform;
+                    ownPlayer.spaceMovement = player.GetComponent<SpaceMovement>();
+                    ownPlayer.shoot = player.GetComponent<Shoot>();
+                    ownPlayer.shoot.ShootEvent += SendPlayerShoot;
+
+                    virtualCamera.Follow = player.transform;
+                    virtualCamera.LookAt = player.transform;
+                    break;
+                }
+
+            case Opcode.OnOtherClientConnect:
+                {
+                    InitData dataFromServer = new();
+                    dataFromServer.Deserialize(buffer, ref offset);
+                    GameObject player2 = Instantiate(otherClient, dataFromServer.serverClientInitData.playerStartPos, Quaternion.identity);
+                    player2.GetComponent<ClientSkinLoader>().LoadSkin(dataFromServer.clientInitData.skinId, dataFromServer.clientInitData.matId);
+                    player2.GetComponent<ClientNameLoader>().LoadName(dataFromServer.clientInitData.playerName);
+                    playersInitData.Add(dataFromServer.serverClientInitData.playerNum, new PlayerData() { playerTransform = player2.transform, initData = dataFromServer });
+                    break;
+                }
+
+            case Opcode.FromServerPlayerPosition:
+                {
+                    Debug.Log("Receive position FROM SERVER");
+                    ServerToPlayerPosition positionFromServer = new();
+                    positionFromServer.Deserialize(buffer, ref offset);
+
+                    if (positionFromServer.playerNum == ownPlayer.initData.serverClientInitData.playerNum)
+                    {
+                        Vector3 previousPlayerPos = positionFromServer.position;
+                        ownPlayer.playerTransform.position = previousPlayerPos;
+                        ownPlayer.playerTransform.rotation = positionFromServer.rotation;
+
+                        for (int i = ownPlayer.predictedInput.Count - 1; i > 0; i--)
+                        {
+                            if (ownPlayer.predictedInput[i].inputId < positionFromServer.inputId)
+                                ownPlayer.predictedInput.RemoveAt(i);
+                        }
+
+                        for (int i = 0; i < ownPlayer.predictedInput.Count; i++)
+                        {
+                            ownPlayer.spaceMovement.AdvanceSpaceShip(ownPlayer.predictedInput[i].moveInput, ownPlayer.predictedInput[i].rotation);
+                        }
+                    }
+                    else
+                    {
+                        playersInitData[positionFromServer.playerNum].playerTransform.position = positionFromServer.position;
+                    }
+
+                    break;
+                }
+        }
+
     }
 }

@@ -13,6 +13,8 @@ public class SpaceMovement : MonoBehaviour
     private Vector2 _lookInput;
     public Vector2 _moveInput;
 
+    public float MoveSpeed => moveSpeed;
+
     public void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -20,7 +22,7 @@ public class SpaceMovement : MonoBehaviour
         UIManager.Instance.crosshairFollow.ship = transform;
     }
 
-    private void Update()
+    public void AdvanceSpaceShip ()
     {
         ReadInput();
 
@@ -37,6 +39,21 @@ public class SpaceMovement : MonoBehaviour
         Vector3 rotateTo = shipAncor.localEulerAngles;
         rotateTo.z = -_moveInput.x * rotateAngle;
         shipAncor.DOLocalRotate(rotateTo, rotateSpeed);
+    }
+
+    public void AdvanceSpaceShip(Vector2 moveInput, Quaternion rotation)
+    {
+        Vector3 movementZ = moveInput.y * transform.forward * moveSpeed * Time.deltaTime;
+        Vector3 movementX = moveInput.x * transform.right * moveSpeed * Time.deltaTime;
+        Vector3 movement = movementZ + movementX;
+
+        transform.position += movement;
+        transform.rotation = rotation;
+    }
+
+    private void Update()
+    {
+
     }
 
     private void ReadInput()

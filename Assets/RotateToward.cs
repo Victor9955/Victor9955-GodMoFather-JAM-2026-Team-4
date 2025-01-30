@@ -6,6 +6,9 @@ public class RotateToward : MonoBehaviour
     [SerializeField] Transform ship;
     void Start()
     {
-        transform.LookAt(ship.parent.parent.position + ship.parent.parent.forward * amountForward);
+        if(ship != null)
+        {
+            transform.LookAt(ship.parent.parent.position + ship.parent.parent.forward * amountForward);
+        }
     }
 }

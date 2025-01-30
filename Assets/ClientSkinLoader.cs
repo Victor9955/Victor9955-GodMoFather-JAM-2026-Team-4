@@ -10,7 +10,10 @@ public class ClientSkinLoader : MonoBehaviour
     {
         Debug.Log(skinId + " " + matId);
         GameObject obj = Instantiate(clientInfo.skinsPrefab[skinId], ancor);
-        obj.GetComponent<MeshRenderer>().material = clientInfo.materials[matId];
-        shoot.SetupShoot(obj.GetComponent<ShootParticle>());
+        obj.transform.GetComponent<MeshRenderer>().material = clientInfo.materials[matId];
+        if(shoot != null)
+        {
+            shoot.SetupShoot(obj.transform.GetComponent<ShootParticle>());
+        }
     }
 }

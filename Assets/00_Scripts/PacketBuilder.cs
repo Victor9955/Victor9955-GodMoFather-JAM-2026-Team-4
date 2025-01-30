@@ -190,22 +190,48 @@ public class ClientSendShoot : ISerializeInterface
 {
     public Opcode opcode => Opcode.ClientShoot;
 
-    public Vector3 direction;
+    public byte ownPlayerNumber;
 
     public ClientSendShoot() { }
-
-    public ClientSendShoot(Vector3 m_position, Vector3 m_direction)
+    public ClientSendShoot(byte m_ownPlayerNumber) 
     {
-
+        ownPlayerNumber = m_ownPlayerNumber;
     }
 
     public void Serialize(List<byte> byteArray)
     {
-        Serialization.SerializeVector3(byteArray, direction);
+        Serialization.SerializeU8(byteArray, ownPlayerNumber);
     }
 
     public void Deserialize(byte[] byteArray, ref int offset)
     {
+        ownPlayerNumber = Serialization.DeserializeU8(byteArray, ref offset);
+    }
+}
 
+public class ServerHealthUpdate : ISerializeInterface
+{
+    public Opcode opcode => Opcode.FromServerHealthUpdate;
+
+    public byte playerNumber;
+    public ushort health;
+
+    public ServerHealthUpdate() { }
+    public ServerHealthUpdate(byte m_playerNumber, ushort m_health)
+    {
+        playerNumber = m_playerNumber;
+        health = m_health;
+    }
+
+    public void Serialize(List<byte> byteArray)
+    {
+        Serialization.SerializeU8(byteArray, playerNumber);
+        Serialization.SerializeU16(byteArray, health);
+    }
+
+    public void Deserialize(byte[] byteArray, ref int offset)
+    {
+        playerNumber = Serialization.DeserializeU8(byteArray, ref offset);
+        health = Serialization.DeserializeU16(byteArray, ref offset);
     }
 }

@@ -157,11 +157,11 @@ public class NetworkClient : MonoBehaviour
         packetBuilder.SendPacket(inputData);
     }
 
-    public void SendPlayerShoot(Vector3 m_position, Vector3 m_direction)
+    public void SendPlayerShoot()
     {
         if (ownPlayer.spaceMovement)
         {
-            packetBuilder.SendPacket(new ClientSendShoot(m_position, m_direction));
+            packetBuilder.SendPacket(new ClientSendShoot(ownPlayer.initData.serverClientInitData.playerNum));
         }
     }
 

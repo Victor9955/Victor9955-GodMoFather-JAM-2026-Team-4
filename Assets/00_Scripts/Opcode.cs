@@ -4,5 +4,7 @@ public enum Opcode : byte
     OnClientConnectResponse,
     OnOtherClientConnect,
     PlayerInputsData,
-    ClientShoot
+    ClientShoot,
+    FromServerPlayerPosition,
+    FromServerHealthUpdate
 }

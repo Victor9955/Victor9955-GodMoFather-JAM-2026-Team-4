@@ -9,7 +9,7 @@ public class Shoot : MonoBehaviour
     [SerializeField] float increaseSpeed = 10f;
     [SerializeField] float decreaseSpeed = 10f;
     [SerializeField] float shootRate = 100f;
-    public event Action<Vector3, Vector3> ShootEvent;
+    public event Action ShootEvent;
     ShootParticle particles;
     bool inputPressed = false;
     float lastShoot = 0;
@@ -67,7 +67,7 @@ public class Shoot : MonoBehaviour
         if(Time.time > lastShoot + shootRate / 60f)
         {
             lastShoot = Time.time;
-            ShootEvent?.Invoke(transform.position, transform.forward);
+            ShootEvent?.Invoke();
             //Debug.DrawRay(transform.position, transform.forward * UIManager.Instance.crosshairFollow.amountForward, Color.red, 10f);
         }
     }

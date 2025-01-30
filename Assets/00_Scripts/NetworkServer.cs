@@ -10,6 +10,7 @@ class ServerClientData
     public InitData initData = new InitData();
     public List<PlayerInputData> playerInputsDatas = new List<PlayerInputData>();
     public Vector3 Position;
+    public int health = 1000;
 }
 
 public class NetworkServer : MonoBehaviour
@@ -19,6 +20,7 @@ public class NetworkServer : MonoBehaviour
 
     private float tickDelay = 1/30;
     private float tickTime;
+    private int damagePerShoot = 1;
 
     public bool CreateServer(string addressString)
     {
@@ -58,7 +60,7 @@ public class NetworkServer : MonoBehaviour
                     //if (otherDatas.initData.serverClientInitData.playerNum == data.initData.serverClientInitData.playerNum) continue;
 
                     ServerToPlayerPosition serverPositionData = new ServerToPlayerPosition(lastPlayerInputs.inputId, lastPlayerInputs.rotation, data.initData.serverClientInitData.playerNum, data.Position);
-                    data.packetBuilder.SendPacket(serverPositionData);
+                    otherDatas.packetBuilder.SendPacket(serverPositionData);
                 }
             }
         }
@@ -161,9 +163,10 @@ public class NetworkServer : MonoBehaviour
                 break;
 
             case Opcode.ClientShoot:
-                ClientSendShoot clientShoot = new ClientSendShoot();
-                clientShoot.Deserialize(buffer, ref offset);
+                ClientSendShoot clientSendShoot = new ();
+                clientSendShoot.Deserialize(buffer, ref offset);
 
+                Debug.Log(clientSendShoot.ownPlayerNumber);
                 break;
                 
         }

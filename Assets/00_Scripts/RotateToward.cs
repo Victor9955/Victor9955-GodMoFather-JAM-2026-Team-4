@@ -8,7 +8,7 @@ public class RotateToward : MonoBehaviour
     {
         if(ship != null)
         {
-            transform.LookAt(ship.parent.parent.position + ship.parent.parent.forward * amountForward);
+            transform.LookAt(transform.parent.parent.parent.position + transform.parent.parent.parent.forward * amountForward);
         }
     }
 }

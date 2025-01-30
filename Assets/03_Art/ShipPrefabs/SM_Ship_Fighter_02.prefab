@@ -124,7 +124,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _particleSystem: {fileID: 1987159108645526678}
-  _speed: 0.15
 --- !u!1001 &5317264618750147110
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -311,6 +310,10 @@ PrefabInstance:
       propertyPath: playOnAwake
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8492862134529310880, guid: b0f096df10044dc43aa03fce3ff15f9c, type: 3}
+      propertyPath: ship
+      value: 
+      objectReference: {fileID: 4079919548973394}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:

@@ -7,19 +7,14 @@ public class ShootManager : MonoBehaviour
     [SerializeField] InputManager inputManager;
     [SerializeField] NetworkClient networkClient;
     [SerializeField] float increaseSpeed = 10f;
-    [SerializeField] float decreaseSpeed = 10f;
-    [SerializeField] float shootRate = 100f;
+    [SerializeField] float decreaseSpeed = 10.5f;
     public event Action ShootEvent;
     ShootParticle particles;
-    bool inputPressed = false;
-    float lastShoot = 0;
-
-    [SerializeField,Range(0, 1)] float amount = 1f;
+    float amount = 1f;
 
     private void Start()
     {
         inputManager.inputActions.Player.Attack.performed += ShootAction_performed;
-        inputManager.inputActions.Player.Attack.canceled += ShootAction_canceled;
     }
     
     public void SetupShoot(ShootParticle m_particles)
@@ -27,48 +22,23 @@ public class ShootManager : MonoBehaviour
         particles = m_particles;
     }
 
-    private void ShootAction_canceled(InputAction.CallbackContext obj)
-    {
-        inputPressed = false;
-    }
-
     private void ShootAction_performed(InputAction.CallbackContext obj)
     {
-        inputPressed = true;
+        amount = Mathf.Clamp01(amount - decreaseSpeed * Time.deltaTime);
     }
 
     private void Update()
     {
-        
-        if(inputPressed)
-        {
-            amount = Mathf.Clamp01(amount - decreaseSpeed * Time.deltaTime);
-        }
-        else
-        {
-            amount = Mathf.Clamp01(amount + increaseSpeed * Time.deltaTime);
-        }
-
-        if (amount > 0 && inputPressed)
-        {
-            DoShoot();
-            particles.StartShooting();
-        }
-        else
-        {
-            particles.StopShooting();
-        }
-
+        amount = Mathf.Clamp01(amount + increaseSpeed * Time.deltaTime);
+        DoShoot();
         UIManager.Instance.shootScrollbar.size = amount;
     }
 
     public void DoShoot()
     {
-        if(Time.time > lastShoot + shootRate / 60f)
+        if(amount >= 0f)
         {
-            lastShoot = Time.time;
             ShootEvent?.Invoke();
-            //Debug.DrawRay(transform.position, transform.forward * UIManager.Instance.crosshairFollow.amountForward, Color.red, 10f);
         }
     }
 }

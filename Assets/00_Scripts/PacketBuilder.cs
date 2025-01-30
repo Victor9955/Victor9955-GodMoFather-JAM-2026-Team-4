@@ -215,23 +215,27 @@ public class ServerHealthUpdate : ISerializeInterface
 
     public byte playerNumber;
     public ushort health;
+    public ushort maxHealth;
 
     public ServerHealthUpdate() { }
-    public ServerHealthUpdate(byte m_playerNumber, ushort m_health)
+    public ServerHealthUpdate(byte m_playerNumber, ushort m_health, ushort m_maxHealth)
     {
         playerNumber = m_playerNumber;
         health = m_health;
+        maxHealth = m_maxHealth;
     }
 
     public void Serialize(List<byte> byteArray)
     {
         Serialization.SerializeU8(byteArray, playerNumber);
         Serialization.SerializeU16(byteArray, health);
+        Serialization.SerializeU16(byteArray, maxHealth);
     }
 
     public void Deserialize(byte[] byteArray, ref int offset)
     {
         playerNumber = Serialization.DeserializeU8(byteArray, ref offset);
         health = Serialization.DeserializeU16(byteArray, ref offset);
+        maxHealth = Serialization.DeserializeU16(byteArray, ref offset);
     }
 }

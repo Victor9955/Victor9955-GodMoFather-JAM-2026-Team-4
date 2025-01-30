@@ -92,12 +92,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 943026566312159065}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 450970705d795f24dba436f18d05e27e, type: 3}
+  m_Script: {fileID: 11500000, guid: 0a0fce3c8db6b6a47971880bcef0c10b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   inputManager: {fileID: 418069451978063424}
-  increaseSpeed: 0.75
-  decreaseSpeed: 0.75
+  networkClient: {fileID: 0}
+  increaseSpeed: 10
+  decreaseSpeed: 10
+  shootRate: 100
   amount: 1
 --- !u!1 &3751314860066642055
 GameObject:

@@ -12,7 +12,8 @@ public class PlayerData
     public Transform playerTransform;
     public SpaceMovement spaceMovement;
     public List<PlayerInputData> predictedInput = new List<PlayerInputData>();
-    public Shoot shoot;
+    public ShootManager shoot;
+    public OtherClientUIManager otherUIManager;
 }
 
 
@@ -26,7 +27,7 @@ public class NetworkClient : MonoBehaviour
     PacketBuilder packetBuilder = null;
     uint currentId = 0;
 
-    Dictionary<uint, PlayerData> playersInitData = new();
+    Dictionary<uint, PlayerData> players = new();
 
     [SerializeField] CinemachineVirtualCamera virtualCamera;
     [SerializeField] GameObject client;
@@ -183,7 +184,7 @@ public class NetworkClient : MonoBehaviour
                     ownPlayer.initData.serverClientInitData = responseFromConnect;
                     ownPlayer.playerTransform = player.transform;
                     ownPlayer.spaceMovement = player.GetComponent<SpaceMovement>();
-                    ownPlayer.shoot = player.GetComponent<Shoot>();
+                    ownPlayer.shoot = player.GetComponent<ShootManager>();
                     ownPlayer.shoot.ShootEvent += SendPlayerShoot;
 
                     virtualCamera.Follow = player.transform;
@@ -197,8 +198,9 @@ public class NetworkClient : MonoBehaviour
                     dataFromServer.Deserialize(buffer, ref offset);
                     GameObject player2 = Instantiate(otherClient, dataFromServer.serverClientInitData.playerStartPos, Quaternion.identity);
                     player2.GetComponent<ClientSkinLoader>().LoadSkin(dataFromServer.clientInitData.skinId, dataFromServer.clientInitData.matId);
-                    player2.GetComponent<ClientNameLoader>().LoadName(dataFromServer.clientInitData.playerName);
-                    playersInitData.Add(dataFromServer.serverClientInitData.playerNum, new PlayerData() { playerTransform = player2.transform, initData = dataFromServer });
+                    OtherClientUIManager uIManager = player2.GetComponent<OtherClientUIManager>();
+                    uIManager.LoadName(dataFromServer.clientInitData.playerName);
+                    players.Add(dataFromServer.serverClientInitData.playerNum, new PlayerData() { playerTransform = player2.transform, initData = dataFromServer, otherUIManager = uIManager});
                     break;
                 }
 
@@ -227,9 +229,18 @@ public class NetworkClient : MonoBehaviour
                     }
                     else
                     {
-                        playersInitData[positionFromServer.playerNum].playerTransform.position = positionFromServer.position;
+                        players[positionFromServer.playerNum].playerTransform.position = positionFromServer.position;
+                        players[positionFromServer.playerNum].playerTransform.rotation = positionFromServer.rotation;
                     }
 
+                    break;
+                }
+
+        case Opcode.FromServerHealthUpdate:
+                {
+                    ServerHealthUpdate serverHealthUpdate = new ServerHealthUpdate();
+                    serverHealthUpdate.Deserialize(buffer, ref offset);
+                    players[serverHealthUpdate.playerNumber].otherUIManager.UpdateHealth(serverHealthUpdate.health, serverHealthUpdate.maxHealth);
                     break;
                 }
         }

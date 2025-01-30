@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Shoot : MonoBehaviour
+public class ShootManager : MonoBehaviour
 {
     [SerializeField] InputManager inputManager;
     [SerializeField] NetworkClient networkClient;

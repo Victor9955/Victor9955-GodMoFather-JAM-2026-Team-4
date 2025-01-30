@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.Analytics.IAnalytic;
 
 class ServerClientData
 {
@@ -10,17 +11,20 @@ class ServerClientData
     public InitData initData = new InitData();
     public List<PlayerInputData> playerInputsDatas = new List<PlayerInputData>();
     public Vector3 Position;
-    public int health = 1000;
+    public ushort health = 1000;
+    public Transform transform;
 }
 
 public class NetworkServer : MonoBehaviour
 {
     private ENet6.Host enetHost = null;
     Dictionary<uint, ServerClientData> players = new();
+    [SerializeField] GameObject clientPrefab;
 
     private float tickDelay = 1/30;
     private float tickTime;
-    private int damagePerShoot = 1;
+    private ushort damagePerShoot = 1;
+    private ushort maxHealth = 1000;
 
     public bool CreateServer(string addressString)
     {
@@ -52,7 +56,6 @@ public class NetworkServer : MonoBehaviour
                 PlayerInputData lastPlayerInputs = data.playerInputsDatas[0];
                 data.playerInputsDatas.RemoveAt(0);
                 AdvancePhysics(lastPlayerInputs.moveInput, lastPlayerInputs.moveSpeed, ref data.Position);
-                
 
                 Debug.Log("Server send player positions");
                 foreach (ServerClientData otherDatas in players.Values)
@@ -153,20 +156,46 @@ public class NetworkServer : MonoBehaviour
                 }
 
                 serverClientData.Position = serverInitData.playerStartPos;
+
+                serverClientData.transform = Instantiate(clientPrefab).transform;
+
                 players.Add(serverInitData.playerNum, serverClientData);
                 break;
 
             case Opcode.PlayerInputsData:
                 PlayerInputData dataFromPlayer = new ();
                 dataFromPlayer.Deserialize(buffer, ref offset);
+                players[dataFromPlayer.playerNum].transform.rotation = dataFromPlayer.rotation;
                 players[dataFromPlayer.playerNum].playerInputsDatas.Add(dataFromPlayer);
                 break;
 
             case Opcode.ClientShoot:
                 ClientSendShoot clientSendShoot = new ();
                 clientSendShoot.Deserialize(buffer, ref offset);
+                players[clientSendShoot.ownPlayerNumber].transform.gameObject.SetActive(false);
+                Vector3 rayPos = players[clientSendShoot.ownPlayerNumber].transform.position;
+                Vector3 rayDir = players[clientSendShoot.ownPlayerNumber].transform.forward;
 
-                Debug.Log(clientSendShoot.ownPlayerNumber);
+                if(Physics.Raycast(rayPos, rayDir, out RaycastHit hitInfo))
+                {
+                    byte playerHit = 0;
+
+                    foreach (var player in players.Values)
+                    {
+                        if(player.initData.serverClientInitData.playerNum != clientSendShoot.ownPlayerNumber && player.transform == hitInfo.collider.transform)
+                        {
+                            player.health -= damagePerShoot;
+                            playerHit = player.initData.serverClientInitData.playerNum;
+                        }
+                    }
+
+                    foreach (var player in players.Values)
+                    {
+                        player.packetBuilder.SendPacket(new ServerHealthUpdate(playerHit, players[playerHit].health, maxHealth));
+                    }
+                }
+
+                players[clientSendShoot.ownPlayerNumber].transform.gameObject.SetActive(true);
                 break;
                 
         }

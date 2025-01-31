@@ -19,7 +19,7 @@ public class SpaceMovement : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        UIManager.Instance.crosshairFollow.ship = transform;
+        UIManager.instance.crosshairFollow.ship = transform;
     }
 
     public void AdvanceSpaceShip (float TickDelay)

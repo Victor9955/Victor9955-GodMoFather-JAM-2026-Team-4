@@ -242,27 +242,79 @@ public class ServerHealthUpdate : ISerializeInterface
 
 public class LeaderBoardUpdate : ISerializeInterface
 {
-    public Opcode opcode => Opcode.LeaderBoard;
+    public Opcode opcode => Opcode.LeaderBoardUpdate;
 
-    public ushort scores;
+    public ushort score;
     public ushort playerNum;
 
     public LeaderBoardUpdate() { }
-    public LeaderBoardUpdate(ushort m_playerNum,ushort m_scores)
+    public LeaderBoardUpdate(ushort m_playerNum,ushort m_score)
     {
-        scores = m_scores;
+        score = m_score;
         playerNum = m_playerNum;
     }
 
     public void Serialize(List<byte> byteArray)
     {
         Serialization.SerializeU16(byteArray, playerNum);
-        Serialization.SerializeU16(byteArray, scores);
+        Serialization.SerializeU16(byteArray, score);
     }
 
     public void Deserialize(byte[] byteArray, ref int offset)
     {
         playerNum = Serialization.DeserializeU16(byteArray, ref offset);
-        scores = Serialization.DeserializeU16(byteArray, ref offset);
+        score = Serialization.DeserializeU16(byteArray, ref offset);
+    }
+}
+
+public class ClientDead : ISerializeInterface
+{
+    public Opcode opcode => Opcode.ClientDead;
+
+    public ushort playerKilled;
+    public ushort killedBy;
+
+    public ClientDead() { }
+
+    public ClientDead(ushort m_killedBy, ushort m_playerKilled)
+    {
+        killedBy = m_killedBy;
+        playerKilled = m_playerKilled;
+    }
+
+    public void Deserialize(byte[] byteArray, ref int offset)
+    {
+        playerKilled = Serialization.DeserializeU16(byteArray, ref offset);
+        killedBy = Serialization.DeserializeU16(byteArray, ref offset);
+    }
+
+    public void Serialize(List<byte> byteArray)
+    {
+        Serialization.SerializeU16(byteArray, playerKilled);
+        Serialization.SerializeU16(byteArray, killedBy);
+    }
+}
+
+public class ClientRespawn : ISerializeInterface
+{
+    public Opcode opcode => Opcode.ClientRespawn;
+
+    public ushort playerNum;
+
+    public ClientRespawn() { }
+
+    public ClientRespawn( ushort m_playerNum)
+    {
+        playerNum = m_playerNum;
+    }
+
+    public void Deserialize(byte[] byteArray, ref int offset)
+    {
+        playerNum = Serialization.DeserializeU16(byteArray, ref offset);
+    }
+
+    public void Serialize(List<byte> byteArray)
+    {
+        Serialization.SerializeU16(byteArray, playerNum);
     }
 }

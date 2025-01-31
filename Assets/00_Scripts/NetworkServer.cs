@@ -1,6 +1,7 @@
 using ENet6;
 using NUnit.Framework;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.Analytics.IAnalytic;
@@ -30,6 +31,7 @@ public class NetworkServer : MonoBehaviour
     private float tickTime;
     private ushort damagePerShoot = 1;
     private ushort maxHealth = 5;
+    private float respawnTime = 5f;
 
     public bool CreateServer(string addressString)
     {
@@ -206,8 +208,13 @@ public class NetworkServer : MonoBehaviour
                             playerHit = player.initData.serverClientInitData.playerNum;
                             if(player.health == 0)
                             {
-                                Respawn(player);
                                 players[clientSendShoot.ownPlayerNumber].score++;
+                                StartCoroutine(RespawnRoutine(player));
+                                foreach (var playerScores in players.Values)
+                                {
+                                    playerScores.packetBuilder.SendPacket(new LeaderBoardUpdate(clientSendShoot.ownPlayerNumber, players[clientSendShoot.ownPlayerNumber].score));
+                                    playerScores.packetBuilder.SendPacket(new ClientDead(clientSendShoot.ownPlayerNumber, player.initData.serverClientInitData.playerNum));
+                                }
                             }
                         }
                     }
@@ -215,13 +222,23 @@ public class NetworkServer : MonoBehaviour
                     foreach (var player in players.Values)
                     {
                         player.packetBuilder.SendPacket(new ServerHealthUpdate(playerHit, players[playerHit].health, maxHealth));
-                        player.packetBuilder.SendPacket(new LeaderBoardUpdate(player.initData.serverClientInitData.playerNum, player.score));
                     }
                 }
 
                 players[clientSendShoot.ownPlayerNumber].transform.gameObject.SetActive(true);
                 break;
                 
+        }
+    }
+
+    IEnumerator RespawnRoutine(ServerClientData playerDead)
+    {
+        yield return new WaitForSecondsRealtime(respawnTime);
+        Respawn(playerDead);
+        foreach (var player in players.Values)
+        {
+            player.packetBuilder.SendPacket(new ClientRespawn(playerDead.initData.serverClientInitData.playerNum));
+            player.packetBuilder.SendPacket(new ServerHealthUpdate(playerDead.initData.serverClientInitData.playerNum, playerDead.health, maxHealth));
         }
     }
 }

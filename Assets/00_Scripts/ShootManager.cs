@@ -40,7 +40,7 @@ public class ShootManager : MonoBehaviour
             lastTime = Time.time;
             amount = Mathf.Clamp01(amount + increaseSpeed);
         }
-        UIManager.Instance.shootScrollbar.size = amount;
+        UIManager.instance.shootScrollbar.size = amount;
     }
 
     public void DoShoot()

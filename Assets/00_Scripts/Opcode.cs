@@ -7,5 +7,7 @@ public enum Opcode : byte
     ClientShoot,
     FromServerPlayerPosition,
     FromServerHealthUpdate,
-    LeaderBoard
+    LeaderBoardUpdate,
+    ClientDead,
+    ClientRespawn
 }

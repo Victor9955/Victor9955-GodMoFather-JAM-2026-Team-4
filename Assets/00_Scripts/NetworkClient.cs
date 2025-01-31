@@ -112,16 +112,6 @@ public class NetworkClient : MonoBehaviour
 
     }
 
-    void UpdateLeaderBoard()
-    {
-        List<(string, ushort)> leaderBoard = new();
-        foreach(PlayerData player in players.Values)
-        {
-            leaderBoard.Add((player.initData.clientInitData.playerName, player.score));
-        }
-        UIManager.Instance.LeaderBoard(leaderBoard);
-    }
-
     void FixedUpdate()
     {
         ENet6.Event evt = new ENet6.Event();
@@ -200,6 +190,7 @@ public class NetworkClient : MonoBehaviour
 
                     virtualCamera.Follow = player.transform;
                     virtualCamera.LookAt = player.transform;
+                    UIManager.instance.UpdateLeaderBoard(ownPlayer.initData.clientInitData.playerName, 0);
                     break;
                 }
 
@@ -212,6 +203,7 @@ public class NetworkClient : MonoBehaviour
                     OtherClientUIManager uIManager = player2.GetComponent<OtherClientUIManager>();
                     uIManager.LoadName(dataFromServer.clientInitData.playerName);
                     players.Add(dataFromServer.serverClientInitData.playerNum, new PlayerData() { playerTransform = player2.transform, initData = dataFromServer, otherUIManager = uIManager});
+                    UIManager.instance.UpdateLeaderBoard(dataFromServer.clientInitData.playerName, 0);
                     break;
                 }
 
@@ -252,7 +244,7 @@ public class NetworkClient : MonoBehaviour
                     serverHealthUpdate.Deserialize(buffer, ref offset);
                     if (serverHealthUpdate.playerNumber == ownPlayer.initData.serverClientInitData.playerNum)
                     {
-                        UIManager.Instance.lifeBar.size = (float)serverHealthUpdate.health / (float)serverHealthUpdate.maxHealth;
+                        UIManager.instance.lifeBar.size = (float)serverHealthUpdate.health / (float)serverHealthUpdate.maxHealth;
                     }
                     else
                     {
@@ -261,14 +253,65 @@ public class NetworkClient : MonoBehaviour
                     break;
                 }
 
-        case Opcode.LeaderBoard:
+        case Opcode.LeaderBoardUpdate:
                 {
                     LeaderBoardUpdate leaderBoardUpdate = new LeaderBoardUpdate();
                     leaderBoardUpdate.Deserialize(buffer, ref offset);
 
-                    players[leaderBoardUpdate.playerNum].score = leaderBoardUpdate.scores;
+                    players[leaderBoardUpdate.playerNum].score = leaderBoardUpdate.score;
+                    if(leaderBoardUpdate.playerNum == ownPlayer.initData.serverClientInitData.playerNum)
+                    {
+                        UIManager.instance.UpdateLeaderBoard(ownPlayer.initData.clientInitData.playerName, leaderBoardUpdate.score);
+                    }
+                    else
+                    {
+                        UIManager.instance.UpdateLeaderBoard(players[leaderBoardUpdate.playerNum].initData.clientInitData.playerName, leaderBoardUpdate.score);
+                    }
                     break;
                 }
+
+        case Opcode.ClientDead:
+            {
+                ClientDead clientDead = new ClientDead();
+                clientDead.Deserialize(buffer, ref offset);
+
+                if(clientDead.playerKilled == ownPlayer.initData.serverClientInitData.playerNum)
+                {
+                    ownPlayer.playerTransform.gameObject.SetActive(false);
+                    virtualCamera.LookAt = players[clientDead.killedBy].playerTransform;
+                    UIManager.instance.ShowDeadUI();
+                }
+                else
+                {
+                    if(players.TryGetValue(clientDead.playerKilled, out PlayerData deadPlayerData))
+                    {
+                        deadPlayerData.playerTransform.gameObject.SetActive(false);
+                    }
+                }
+
+                break;
+            }
+        case Opcode.ClientRespawn:
+            {
+                ClientRespawn clientRespawn = new ClientRespawn();
+                clientRespawn.Deserialize(buffer, ref offset);
+
+                if (clientRespawn.playerNum == ownPlayer.initData.serverClientInitData.playerNum)
+                {
+                    ownPlayer.playerTransform.gameObject.SetActive(true);
+                    virtualCamera.LookAt = ownPlayer.playerTransform;
+                    UIManager.instance.HideDeadUI();
+                }
+                else
+                {
+                    if (players.TryGetValue(clientRespawn.playerNum, out PlayerData deadPlayerData))
+                    {
+                        deadPlayerData.playerTransform.gameObject.SetActive(true);
+                    }
+                }
+
+                break;
+            }
         }
 
     }

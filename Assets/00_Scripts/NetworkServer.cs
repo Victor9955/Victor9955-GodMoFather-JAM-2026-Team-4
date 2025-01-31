@@ -13,7 +13,7 @@ class ServerClientData
     public List<PlayerInputData> playerInputsDatas = new List<PlayerInputData>();
     public Vector3 Position;
 
-    public ushort health = 50;
+    public ushort health = 10;
     public Quaternion Rotation;
 
     public Transform transform;
@@ -28,7 +28,7 @@ public class NetworkServer : MonoBehaviour
     private float tickDelay = 1f/60f;
     private float tickTime;
     private ushort damagePerShoot = 1;
-    private ushort maxHealth = 50;
+    private ushort maxHealth = 10;
 
     public bool CreateServer(string addressString)
     {
@@ -142,6 +142,7 @@ public class NetworkServer : MonoBehaviour
         float randomSize = UnityEngine.Random.Range(50f, 200f);
         Vector2 randomPos = new Vector2(Mathf.Cos(randomAngle * Mathf.Deg2Rad) * randomSize, Mathf.Sin(randomAngle * Mathf.Deg2Rad) * randomSize);
         client.transform.position = new Vector3(randomPos.x , 0f , randomPos.y);
+        client.Position = new Vector3(randomPos.x, 0f, randomPos.y);
     }
 
     private void HandleMessage(Peer peer, byte[] buffer)

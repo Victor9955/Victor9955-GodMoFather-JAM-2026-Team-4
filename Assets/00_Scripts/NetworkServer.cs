@@ -135,6 +135,15 @@ public class NetworkServer : MonoBehaviour
         }
     }
 
+    void Respawn(ServerClientData client)
+    {
+        client.health = maxHealth;
+        float randomAngle = UnityEngine.Random.Range(0f, 360f);
+        float randomSize = UnityEngine.Random.Range(50f, 200f);
+        Vector2 randomPos = new Vector2(Mathf.Cos(randomAngle * Mathf.Deg2Rad) * randomSize, Mathf.Sin(randomAngle * Mathf.Deg2Rad) * randomSize);
+        client.transform.position = new Vector3(randomPos.x , 0f , randomPos.y);
+    }
+
     private void HandleMessage(Peer peer, byte[] buffer)
     {
         int offset = 0;
@@ -193,6 +202,10 @@ public class NetworkServer : MonoBehaviour
                         {
                             player.health -= damagePerShoot;
                             playerHit = player.initData.serverClientInitData.playerNum;
+                            if(player.health == 0)
+                            {
+                                Respawn(player);
+                            }
                         }
                     }
 

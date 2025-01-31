@@ -25,7 +25,7 @@ public class NetworkServer : MonoBehaviour
     Dictionary<uint, ServerClientData> players = new();
     [SerializeField] GameObject clientPrefab;
 
-    private float tickDelay = 1f/60f;
+    private float tickDelay = 1f / 75f;
     private float tickTime;
     private ushort damagePerShoot = 1;
     private ushort maxHealth = 5;

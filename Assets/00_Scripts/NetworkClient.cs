@@ -33,7 +33,7 @@ public class NetworkClient : MonoBehaviour
     [SerializeField] GameObject otherClient;
     [SerializeField] ClientGlobalInfo clientInfo;
 
-    private float tickRate = 1f / 60f;
+    private float tickRate = 1f / 75f;
     private float tickTime;
 
     public bool Connect(string addressString)

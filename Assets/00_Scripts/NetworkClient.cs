@@ -108,8 +108,6 @@ public class NetworkClient : MonoBehaviour
             //tick reseau d'envoie d'inputs
             SendPlayerInputs();
         }
-
-
     }
 
     void UpdateLeaderBoard()
@@ -119,6 +117,7 @@ public class NetworkClient : MonoBehaviour
         {
             leaderBoard.Add((player.initData.clientInitData.playerName, player.score));
         }
+        leaderBoard.Add((ownPlayer.initData.clientInitData.playerName, ownPlayer.score));
         UIManager.Instance.LeaderBoard(leaderBoard);
     }
 
@@ -188,7 +187,6 @@ public class NetworkClient : MonoBehaviour
                 {
                     ConnectServerInitData responseFromConnect = new();
                     responseFromConnect.Deserialize(buffer, ref offset);
-                    //ownPlayerNumber = responseFromConnect.playerNum;
                     GameObject player = Instantiate(client, responseFromConnect.playerStartPos, Quaternion.identity);
                     player.GetComponent<ClientSkinLoader>().LoadSkin(clientInfo.skinId, clientInfo.matId);
 
@@ -267,6 +265,7 @@ public class NetworkClient : MonoBehaviour
                     leaderBoardUpdate.Deserialize(buffer, ref offset);
 
                     players[leaderBoardUpdate.playerNum].score = leaderBoardUpdate.scores;
+                    UpdateLeaderBoard();
                     break;
                 }
         }

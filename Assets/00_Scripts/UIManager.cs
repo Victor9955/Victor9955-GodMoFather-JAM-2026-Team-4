@@ -29,12 +29,13 @@ public class UIManager : MonoBehaviour
     {
         for (int i = 0; i < ancor.childCount; i++)
         {
-            Destroy(ancor.GetChild(i));
+            Destroy(ancor.GetChild(i).gameObject);
         }
 
         foreach (var ch in leaderboard)
         {
             GameObject playerScore = Instantiate(prefab,ancor);
+            playerScore.GetComponent<SetNameAndScore>().SetNameAndScoreFunc(ch.Item1, ch.Item2);
         }
     }
 }

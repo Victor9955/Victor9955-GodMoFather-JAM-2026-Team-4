@@ -255,13 +255,14 @@ public class NetworkClient : MonoBehaviour
                     LeaderBoardUpdate leaderBoardUpdate = new LeaderBoardUpdate();
                     leaderBoardUpdate.Deserialize(buffer, ref offset);
 
-                    players[leaderBoardUpdate.playerNum].score = leaderBoardUpdate.score;
                     if(leaderBoardUpdate.playerNum == ownPlayer.initData.serverClientInitData.playerNum)
                     {
+                        ownPlayer.score = leaderBoardUpdate.score;
                         UIManager.instance.UpdateLeaderBoard(ownPlayer.initData.clientInitData.playerName, leaderBoardUpdate.score);
                     }
                     else
                     {
+                        players[leaderBoardUpdate.playerNum].score = leaderBoardUpdate.score;
                         UIManager.instance.UpdateLeaderBoard(players[leaderBoardUpdate.playerNum].initData.clientInitData.playerName, leaderBoardUpdate.score);
                     }
                     break;

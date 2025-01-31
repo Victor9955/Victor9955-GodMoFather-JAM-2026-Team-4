@@ -2,6 +2,7 @@ using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,7 +19,12 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI deadCountText;
     public float respawnTime = 5f;
 
+    [SerializeField] Color first;
+    [SerializeField] Color second;
+    [SerializeField] Color third;
+
     Dictionary<string,SetNameAndScore> scores = new();
+
 
     Coroutine coroutine;
 
@@ -46,6 +52,17 @@ public class UIManager : MonoBehaviour
             scores.Add(m_name, newObject.GetComponent<SetNameAndScore>());
             scores[m_name].SetNameAndScoreFunc(m_name, m_score);
         }
+
+        var sortedScores = scores.OrderByDescending(kvp => kvp.Value.score).ToList();
+
+        for (int i = 0; i < sortedScores.Count; i++)
+        {
+            sortedScores[i].Value.transform.SetSiblingIndex(i);
+        }
+
+        sortedScores?[0].Value.SetColor(first);
+        sortedScores?[1].Value.SetColor(second);
+        sortedScores?[2].Value.SetColor(third);
     }
 
     public void ShowDeadUI()

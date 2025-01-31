@@ -650,6 +650,9 @@ MonoBehaviour:
   leaderboardUI: {fileID: 1279538692}
   deadCountText: {fileID: 621660785}
   respawnTime: 5
+  first: {r: 1, g: 0.7490196, b: 0, a: 1}
+  second: {r: 0.70980394, g: 0.7176471, b: 0.73333335, a: 1}
+  third: {r: 0.70980394, g: 0.38431373, b: 0.27450982, a: 1}
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0

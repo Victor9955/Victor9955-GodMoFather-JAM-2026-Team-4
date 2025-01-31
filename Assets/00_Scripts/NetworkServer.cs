@@ -3,7 +3,6 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.FilePathAttribute;
 using static UnityEngine.Analytics.IAnalytic;
 
 class ServerClientData
@@ -13,7 +12,7 @@ class ServerClientData
     public List<PlayerInputData> playerInputsDatas = new List<PlayerInputData>();
     public Vector3 Position;
 
-    public ushort health = 50;
+    public ushort health = 5;
     public Quaternion Rotation;
 
     public Transform transform;
@@ -27,10 +26,10 @@ public class NetworkServer : MonoBehaviour
     Dictionary<ushort, ushort> scoreboard = new ();
     [SerializeField] GameObject clientPrefab;
 
-    private float tickDelay = 1f/60f;
+    private float tickDelay = 1f / 75f;
     private float tickTime;
     private ushort damagePerShoot = 1;
-    private ushort maxHealth = 50;
+    private ushort maxHealth = 5;
 
     public bool CreateServer(string addressString)
     {
@@ -144,6 +143,7 @@ public class NetworkServer : MonoBehaviour
         float randomSize = UnityEngine.Random.Range(50f, 200f);
         Vector2 randomPos = new Vector2(Mathf.Cos(randomAngle * Mathf.Deg2Rad) * randomSize, Mathf.Sin(randomAngle * Mathf.Deg2Rad) * randomSize);
         client.transform.position = new Vector3(randomPos.x , 0f , randomPos.y);
+        client.Position = new Vector3(randomPos.x, 0f, randomPos.y);
     }
 
     private void HandleMessage(Peer peer, byte[] buffer)
@@ -191,10 +191,10 @@ public class NetworkServer : MonoBehaviour
                 players[clientSendShoot.ownPlayerNumber].transform.gameObject.SetActive(false);
                 Vector3 rayPos = players[clientSendShoot.ownPlayerNumber].transform.position;
                 Vector3 rayDir = players[clientSendShoot.ownPlayerNumber].transform.forward;
-                Debug.DrawLine(rayPos, rayDir * 100f , Color.red, 10f);
+                Debug.DrawLine(rayPos, rayDir * 200f, Color.red, 10f);
 
 
-                if(Physics.Raycast(rayPos, rayDir * 100f, out RaycastHit hitInfo))
+                if(Physics.Raycast(rayPos, rayDir * 200f, out RaycastHit hitInfo))
                 {
                     byte playerHit = 0;
 

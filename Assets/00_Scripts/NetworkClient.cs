@@ -102,7 +102,6 @@ public class NetworkClient : MonoBehaviour
         if (Time.time >= tickTime && ownPlayer.spaceMovement != null)
         {
             tickTime += tickRate;
-
             ownPlayer.spaceMovement.AdvanceSpaceShip(tickRate);
 
             //tick reseau d'envoie d'inputs

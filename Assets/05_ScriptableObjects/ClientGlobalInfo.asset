@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: ClientGlobalInfo
   m_EditorClassIdentifier: 
   playerName: Test
+  ip: localhost
   skinId: 5
   matId: 15
   skinsPrefab:

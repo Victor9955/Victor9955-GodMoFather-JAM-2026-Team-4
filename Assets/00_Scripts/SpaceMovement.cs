@@ -28,9 +28,9 @@ public class SpaceMovement : MonoBehaviour
         euleurAngle.x -= lookInput.y * lookSensitivity * TickDelay;
         euleurAngle.y += lookInput.x * lookSensitivity * TickDelay;
         transform.rotation = Quaternion.Euler(euleurAngle);
-        Vector3 rotateTo = shipAncor.localEulerAngles;
-        rotateTo.z = -moveInput.x * rotateAngle;
-        shipAncor.DOLocalRotate(rotateTo, rotateSpeed);
+        //Vector3 rotateTo = shipAncor.localEulerAngles;
+        //rotateTo.z = -moveInput.x * rotateAngle;
+        //shipAncor.DOLocalRotate(rotateTo, rotateSpeed);
 
         Vector3 movementZ = moveInput.y * transform.forward * moveSpeed * TickDelay;
         Vector3 movementX = moveInput.x * transform.right * moveSpeed * TickDelay;

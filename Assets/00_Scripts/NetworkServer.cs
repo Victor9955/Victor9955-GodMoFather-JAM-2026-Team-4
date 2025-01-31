@@ -3,7 +3,6 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.FilePathAttribute;
 using static UnityEngine.Analytics.IAnalytic;
 
 class ServerClientData

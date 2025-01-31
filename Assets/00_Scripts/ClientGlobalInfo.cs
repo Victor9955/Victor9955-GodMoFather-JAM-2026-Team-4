@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class ClientGlobalInfo : ScriptableObject
 {
     public string playerName;
+    public string ip = "localhost";
     public int skinId;
     public int matId;
 
@@ -17,5 +18,10 @@ public class ClientGlobalInfo : ScriptableObject
     public void SetName(TMP_InputField inputField)
     {
         playerName = inputField.text;
+    }
+
+    public void SetIp(TMP_InputField inputField)
+    {
+        ip = inputField.text;
     }
 }

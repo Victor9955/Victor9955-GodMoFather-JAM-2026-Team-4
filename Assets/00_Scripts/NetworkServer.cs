@@ -13,7 +13,7 @@ class ServerClientData
     public List<PlayerInputData> playerInputsDatas = new List<PlayerInputData>();
     public Vector3 Position;
 
-    public ushort health = 10;
+    public ushort health = 5;
     public Quaternion Rotation;
 
     public Transform transform;
@@ -28,7 +28,7 @@ public class NetworkServer : MonoBehaviour
     private float tickDelay = 1f/60f;
     private float tickTime;
     private ushort damagePerShoot = 1;
-    private ushort maxHealth = 10;
+    private ushort maxHealth = 5;
 
     public bool CreateServer(string addressString)
     {

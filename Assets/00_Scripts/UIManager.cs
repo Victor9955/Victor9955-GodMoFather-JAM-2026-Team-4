@@ -1,3 +1,5 @@
+using NUnit.Framework;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,6 +9,8 @@ public class UIManager : MonoBehaviour
     public Scrollbar shootScrollbar;
     public CrosshairFollow crosshairFollow;
     public Scrollbar lifeBar;
+    public GameObject prefab;
+    public Transform ancor;
 
 
     private void Awake()
@@ -18,6 +22,19 @@ public class UIManager : MonoBehaviour
         else
         {
             Destroy(this);
+        }
+    }
+
+    public void LeaderBoard(List<(string, ushort)> leaderboard)
+    {
+        for (int i = 0; i < ancor.childCount; i++)
+        {
+            Destroy(ancor.GetChild(i));
+        }
+
+        foreach (var ch in leaderboard)
+        {
+            GameObject playerScore = Instantiate(prefab,ancor);
         }
     }
 }

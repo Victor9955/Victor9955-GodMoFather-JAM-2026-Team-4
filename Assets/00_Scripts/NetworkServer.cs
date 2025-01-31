@@ -17,12 +17,14 @@ class ServerClientData
     public Quaternion Rotation;
 
     public Transform transform;
+    public ushort score;
 }
 
 public class NetworkServer : MonoBehaviour
 {
     private ENet6.Host enetHost = null;
     Dictionary<uint, ServerClientData> players = new();
+    Dictionary<ushort, ushort> scoreboard = new ();
     [SerializeField] GameObject clientPrefab;
 
     private float tickDelay = 1f/60f;
@@ -205,6 +207,7 @@ public class NetworkServer : MonoBehaviour
                             if(player.health == 0)
                             {
                                 Respawn(player);
+                                players[clientSendShoot.ownPlayerNumber].score++;
                             }
                         }
                     }
@@ -212,6 +215,7 @@ public class NetworkServer : MonoBehaviour
                     foreach (var player in players.Values)
                     {
                         player.packetBuilder.SendPacket(new ServerHealthUpdate(playerHit, players[playerHit].health, maxHealth));
+                        player.packetBuilder.SendPacket(new LeaderBoardUpdate(player.initData.serverClientInitData.playerNum, player.score));
                     }
                 }
 

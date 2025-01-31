@@ -6,5 +6,6 @@ public enum Opcode : byte
     PlayerInputsData,
     ClientShoot,
     FromServerPlayerPosition,
-    FromServerHealthUpdate
+    FromServerHealthUpdate,
+    LeaderBoard
 }

@@ -13,6 +13,7 @@ public class PlayerData
     public List<PlayerInputData> predictedInput = new List<PlayerInputData>();
     public ShootManager shoot;
     public OtherClientUIManager otherUIManager;
+    public ushort score;
 }
 
 
@@ -107,6 +108,18 @@ public class NetworkClient : MonoBehaviour
             //tick reseau d'envoie d'inputs
             SendPlayerInputs();
         }
+
+
+    }
+
+    void UpdateLeaderBoard()
+    {
+        List<(string, ushort)> leaderBoard = new();
+        foreach(PlayerData player in players.Values)
+        {
+            leaderBoard.Add((player.initData.clientInitData.playerName, player.score));
+        }
+        UIManager.Instance.LeaderBoard(leaderBoard);
     }
 
     void FixedUpdate()
@@ -245,6 +258,15 @@ public class NetworkClient : MonoBehaviour
                     {
                         players[serverHealthUpdate.playerNumber].otherUIManager.UpdateHealth(serverHealthUpdate.health, serverHealthUpdate.maxHealth);
                     }
+                    break;
+                }
+
+        case Opcode.LeaderBoard:
+                {
+                    LeaderBoardUpdate leaderBoardUpdate = new LeaderBoardUpdate();
+                    leaderBoardUpdate.Deserialize(buffer, ref offset);
+
+                    players[leaderBoardUpdate.playerNum].score = leaderBoardUpdate.scores;
                     break;
                 }
         }

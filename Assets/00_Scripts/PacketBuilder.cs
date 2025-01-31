@@ -239,3 +239,30 @@ public class ServerHealthUpdate : ISerializeInterface
         maxHealth = Serialization.DeserializeU16(byteArray, ref offset);
     }
 }
+
+public class LeaderBoardUpdate : ISerializeInterface
+{
+    public Opcode opcode => Opcode.LeaderBoard;
+
+    public ushort scores;
+    public ushort playerNum;
+
+    public LeaderBoardUpdate() { }
+    public LeaderBoardUpdate(ushort m_playerNum,ushort m_scores)
+    {
+        scores = m_scores;
+        playerNum = m_playerNum;
+    }
+
+    public void Serialize(List<byte> byteArray)
+    {
+        Serialization.SerializeU16(byteArray, playerNum);
+        Serialization.SerializeU16(byteArray, scores);
+    }
+
+    public void Deserialize(byte[] byteArray, ref int offset)
+    {
+        playerNum = Serialization.DeserializeU16(byteArray, ref offset);
+        scores = Serialization.DeserializeU16(byteArray, ref offset);
+    }
+}

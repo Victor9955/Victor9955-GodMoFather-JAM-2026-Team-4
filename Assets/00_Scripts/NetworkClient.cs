@@ -33,6 +33,7 @@ public class NetworkClient : MonoBehaviour
     [SerializeField] GameObject client;
     [SerializeField] GameObject otherClient;
     [SerializeField] ClientGlobalInfo clientInfo;
+    [SerializeField] GameObject deathParticles;
 
     private float tickRate = 1f / 75f;
     private float tickTime;
@@ -277,6 +278,7 @@ public class NetworkClient : MonoBehaviour
                 {
                     ownPlayer.playerTransform.gameObject.SetActive(false);
                     virtualCamera.LookAt = players[clientDead.killedBy].playerTransform;
+                    Instantiate(deathParticles, ownPlayer.playerTransform.position, Quaternion.identity);
                     UIManager.instance.ShowDeadUI();
                 }
                 else
@@ -284,9 +286,10 @@ public class NetworkClient : MonoBehaviour
                     if(players.TryGetValue(clientDead.playerKilled, out PlayerData deadPlayerData))
                     {
                         deadPlayerData.playerTransform.gameObject.SetActive(false);
+                        Instantiate(deathParticles, deadPlayerData.playerTransform.position, Quaternion.identity);
                     }
                 }
-
+                
                 break;
             }
         case Opcode.ClientRespawn:

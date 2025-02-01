@@ -2481,6 +2481,7 @@ MonoBehaviour:
   client: {fileID: 943026566312159065, guid: fa786eb12857153428c32b46b8f2e1e3, type: 3}
   otherClient: {fileID: 943026566312159065, guid: 88e728e7391451d47a4b440592654150, type: 3}
   clientInfo: {fileID: 11400000, guid: f7b9e831adb112941a9a167599e3f03a, type: 2}
+  deathParticles: {fileID: 3077343761403282166, guid: f78aaaec3b393e24ca74cd6de8194347, type: 3}
 --- !u!1 &2141432634
 GameObject:
   m_ObjectHideFlags: 0

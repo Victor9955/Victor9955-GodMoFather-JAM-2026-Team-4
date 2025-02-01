@@ -96,6 +96,7 @@ public class NetworkClient : MonoBehaviour
 
     private void OnApplicationQuit()
     {
+        packetBuilder.peer.Disconnect(0);
         ENet6.Library.Deinitialize();
     }
 
@@ -313,7 +314,18 @@ public class NetworkClient : MonoBehaviour
 
                 break;
             }
+        case Opcode.ClientDisconnect:
+            {
+                ClientDisconnect clientRespawn = new ClientDisconnect();
+                clientRespawn.Deserialize(buffer, ref offset);
+                UIManager.instance.RemoveFromLeaderBoard(players[clientRespawn.playerNum].initData.clientInitData.playerName);
+                Destroy(players[clientRespawn.playerNum].playerTransform.gameObject);
+                players.Remove(clientRespawn.playerNum);
+                players.Remove(clientRespawn.playerNum);
+                break;
+            }
         }
+
 
     }
 }

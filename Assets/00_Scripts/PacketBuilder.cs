@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class PacketBuilder
 {
-    Peer serverPeer;
+    public Peer peer;
     byte channelID;
 
     public PacketBuilder(Peer m_serverPeer, byte m_channelID)
     {
-        serverPeer = m_serverPeer;
+        peer = m_serverPeer;
         channelID = m_channelID;
     }
 
@@ -23,7 +23,7 @@ public class PacketBuilder
         Packet enetPacket = default(Packet);
 
         enetPacket.Create(byteArray.ToArray());
-        serverPeer.Send(channelID, ref enetPacket);
+        peer.Send(channelID, ref enetPacket);
     }
 }
 
@@ -304,6 +304,30 @@ public class ClientRespawn : ISerializeInterface
     public ClientRespawn() { }
 
     public ClientRespawn( ushort m_playerNum)
+    {
+        playerNum = m_playerNum;
+    }
+
+    public void Deserialize(byte[] byteArray, ref int offset)
+    {
+        playerNum = Serialization.DeserializeU16(byteArray, ref offset);
+    }
+
+    public void Serialize(List<byte> byteArray)
+    {
+        Serialization.SerializeU16(byteArray, playerNum);
+    }
+}
+
+public class ClientDisconnect : ISerializeInterface
+{
+    public Opcode opcode => Opcode.ClientDisconnect;
+
+    public ushort playerNum;
+
+    public ClientDisconnect() { }
+
+    public ClientDisconnect(ushort m_playerNum)
     {
         playerNum = m_playerNum;
     }

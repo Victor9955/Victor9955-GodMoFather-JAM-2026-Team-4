@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static UnityEngine.Analytics.IAnalytic;
 
@@ -24,7 +25,7 @@ public class NetworkServer : MonoBehaviour
 {
     private ENet6.Host enetHost = null;
     Dictionary<uint, ServerClientData> players = new();
-    Dictionary<ushort, ushort> scoreboard = new ();
+    Dictionary<ushort, ushort> leaderboard = new ();
     [SerializeField] GameObject clientPrefab;
 
     private float tickDelay = 1f / 75f;
@@ -32,6 +33,7 @@ public class NetworkServer : MonoBehaviour
     private ushort damagePerShoot = 1;
     private ushort maxHealth = 5;
     private float respawnTime = 5f;
+    private int playersNumberIndex = 0;
 
     public bool CreateServer(string addressString)
     {
@@ -120,6 +122,7 @@ public class NetworkServer : MonoBehaviour
 
                     case ENet6.EventType.Disconnect:
                         Debug.Log("Disconnect");
+                        DisconnectPlayer(evt.Peer);
                         break;
 
                     case ENet6.EventType.Receive:
@@ -135,6 +138,21 @@ public class NetworkServer : MonoBehaviour
                 }
             }
             while (enetHost.CheckEvents(out evt) > 0);
+        }
+    }
+
+    void DisconnectPlayer(Peer peer)
+    {
+        ServerClientData playerToDisconnect = players.Values.ToList().Find(player => player.packetBuilder.peer.ID == peer.ID);
+        if(playerToDisconnect != null)
+        {
+            players.Remove(playerToDisconnect.initData.serverClientInitData.playerNum);
+            leaderboard.Remove(playerToDisconnect.initData.serverClientInitData.playerNum);
+            Destroy(playerToDisconnect.transform.gameObject);
+            foreach (var item in players.Values)
+            {
+                item.packetBuilder.SendPacket(new ClientDisconnect(playerToDisconnect.initData.serverClientInitData.playerNum));
+            }
         }
     }
 
@@ -160,7 +178,7 @@ public class NetworkServer : MonoBehaviour
                 ServerClientData serverClientData = new ServerClientData();
                 serverClientData.packetBuilder = new PacketBuilder(peer, 0);
                 serverClientData.initData.clientInitData = dataFromClient;
-                ConnectServerInitData serverInitData = new ConnectServerInitData((byte)(players.Count + 1), new Vector3(UnityEngine.Random.Range(-5, 6), 0, UnityEngine.Random.Range(-5, 6)));
+                ConnectServerInitData serverInitData = new ConnectServerInitData((byte)(playersNumberIndex++), new Vector3(UnityEngine.Random.Range(-5, 6), 0, UnityEngine.Random.Range(-5, 6)));
                 serverClientData.initData.serverClientInitData = serverInitData;
                 serverClientData.packetBuilder.SendPacket<ConnectServerInitData>(serverInitData);
 

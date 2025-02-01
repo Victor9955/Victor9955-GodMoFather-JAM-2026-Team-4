@@ -96,4 +96,10 @@ public class UIManager : MonoBehaviour
         deadCountText.text = "Respawn in " + (int)timer + " sec..";
         coroutine = null;
     }
+
+    public void RemoveFromLeaderBoard(string playerName)
+    {
+        Destroy(scores[playerName].gameObject);
+        scores.Remove(playerName);
+    }
 }

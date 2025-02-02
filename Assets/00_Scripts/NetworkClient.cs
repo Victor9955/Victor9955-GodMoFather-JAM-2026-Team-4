@@ -128,7 +128,7 @@ public class NetworkClient : MonoBehaviour
                 SendPlayerInputs();
             }
 
-            virtualBrainCamera.ManualUpdate();
+            //virtualBrainCamera.ManualUpdate();
         }
     }
 

@@ -60,9 +60,18 @@ public class UIManager : MonoBehaviour
             sortedScores[i].Value.transform.SetSiblingIndex(i);
         }
 
-        sortedScores?[0].Value.SetColor(first);
-        sortedScores?[1].Value.SetColor(second);
-        sortedScores?[2].Value.SetColor(third);
+        if (sortedScores.Count > 0)
+        {
+            sortedScores?[0].Value.SetColor(first);
+        }
+        if (sortedScores.Count > 1)
+        {
+            sortedScores?[1].Value.SetColor(second);
+        }
+        if (sortedScores.Count > 2)
+        {
+            sortedScores?[2].Value.SetColor(third);
+        }
     }
 
     public void ShowDeadUI()

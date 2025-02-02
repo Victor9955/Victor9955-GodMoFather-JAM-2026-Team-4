@@ -13,6 +13,9 @@ public class SpaceMovement : MonoBehaviour
     private Vector2 lookInput;
     public Vector2 moveInput;
 
+    public Vector3 visualError;
+    public Vector3 baseTransformPos;
+
     public float MoveSpeed => moveSpeed;
 
     public void Start()
@@ -20,6 +23,13 @@ public class SpaceMovement : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         UIManager.instance.crosshairFollow.ship = transform;
+        baseTransformPos = transform.position;
+    }
+
+    public void SetPositionRotation(Vector3 position, Quaternion rotation)
+    {
+        baseTransformPos = position;
+        transform.rotation = rotation;
     }
 
     public void AdvanceSpaceShip (float TickDelay)
@@ -28,9 +38,9 @@ public class SpaceMovement : MonoBehaviour
         euleurAngle.x -= lookInput.y * lookSensitivity * TickDelay;
         euleurAngle.y += lookInput.x * lookSensitivity * TickDelay;
         transform.rotation = Quaternion.Euler(euleurAngle);
-        //Vector3 rotateTo = shipAncor.localEulerAngles;
-        //rotateTo.z = -moveInput.x * rotateAngle;
-        //shipAncor.DOLocalRotate(rotateTo, rotateSpeed);
+        Vector3 rotateTo = shipAncor.localEulerAngles;
+        rotateTo.z = -moveInput.x * rotateAngle;
+        shipAncor.DOLocalRotate(rotateTo, rotateSpeed);
 
         Vector3 movementZ = moveInput.y * transform.forward * moveSpeed * TickDelay;
         Vector3 movementX = moveInput.x * transform.right * moveSpeed * TickDelay;
@@ -38,7 +48,8 @@ public class SpaceMovement : MonoBehaviour
 
         //Debug.Log("move input : " + moveInput + " / movement : " + movement + " moveSpeed : " + moveSpeed + " tick delay : " + TickDelay);
 
-        transform.position += movement;
+        baseTransformPos += movement;
+        //transform.position += movement;
     }
 
     public void AdvanceSpaceShip (Vector2 moveInput, Quaternion rotation, float TickDelay)
@@ -49,12 +60,15 @@ public class SpaceMovement : MonoBehaviour
         Vector3 movementX = moveInput.x * transform.right * moveSpeed * TickDelay;
         Vector3 movement = movementZ + movementX;
 
-        transform.position += movement;
+        baseTransformPos += movement;
+        //transform.position += movement;
     }
 
     private void Update()
     {
         ReadInput();
+        transform.position = Vector3.Lerp(transform.position, baseTransformPos + visualError, 0.8f);
+        visualError *= 0.9f;
     }
 
     private void ReadInput()

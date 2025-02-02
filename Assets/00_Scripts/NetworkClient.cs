@@ -30,12 +30,13 @@ public class NetworkClient : MonoBehaviour
     Dictionary<uint, PlayerData> players = new();
 
     [SerializeField] CinemachineVirtualCamera virtualCamera;
+    [SerializeField] CinemachineBrain virtualBrainCamera;
     [SerializeField] GameObject client;
     [SerializeField] GameObject otherClient;
     [SerializeField] ClientGlobalInfo clientInfo;
     [SerializeField] GameObject deathParticles;
 
-    private float tickRate = 1f / 75f;
+    private float tickRate = 1f / 60f;
     private float tickTime;
 
     public bool Connect(string addressString)
@@ -92,6 +93,19 @@ public class NetworkClient : MonoBehaviour
             ownPlayer = new PlayerData() { initData = new InitData() { clientInitData = new ClientInitData() { matId = (byte)clientInfo.matId, playerName = clientInfo.playerName, skinId = (byte)clientInfo.skinId } } };
             packetBuilder.SendPacket(new ClientInitData(clientInfo.playerName, clientInfo.skinId, clientInfo.matId));
         }
+        else
+        {
+            GameObject player = Instantiate(client, Vector3.zero, Quaternion.identity);
+            player.GetComponent<ClientSkinLoader>().LoadSkin(clientInfo.skinId, clientInfo.matId);
+
+            ownPlayer = new PlayerData();
+            ownPlayer.playerTransform = player.transform;
+            ownPlayer.spaceMovement = player.GetComponent<SpaceMovement>();
+            ownPlayer.shoot = player.GetComponent<ShootManager>();
+
+            virtualCamera.Follow = player.transform;
+            virtualCamera.LookAt = player.transform;
+        }
     }
 
     private void OnApplicationQuit()
@@ -104,11 +118,17 @@ public class NetworkClient : MonoBehaviour
     {
         if (Time.time >= tickTime && ownPlayer.spaceMovement != null)
         {
+            Debug.Log("tick : " + Time.time + " - tick rate : " + tickRate);
             tickTime += tickRate;
             ownPlayer.spaceMovement.AdvanceSpaceShip(tickRate);
 
-            //tick reseau d'envoie d'inputs
-            SendPlayerInputs();
+            if (ownPlayer.initData != null)
+            {
+                //tick reseau d'envoie d'inputs
+                SendPlayerInputs();
+            }
+
+            virtualBrainCamera.ManualUpdate();
         }
     }
 
@@ -208,16 +228,20 @@ public class NetworkClient : MonoBehaviour
 
             case Opcode.FromServerPlayerPosition:
                 {
-                    Debug.Log("Receive position FROM SERVER");
+                    //Debug.Log("Receive position FROM SERVER");
                     ServerToPlayerPosition positionFromServer = new();
                     positionFromServer.Deserialize(buffer, ref offset);
 
                     if (positionFromServer.playerNum == ownPlayer.initData.serverClientInitData.playerNum)
                     {
-                        Debug.Log("PREDICTED CURRENT POSITION : " + ownPlayer.playerTransform.position + " with input ID : " + (currentId - 1));
-                        Debug.Log("ROLL BACK POSITION : " + positionFromServer.position + " with input ID : " + positionFromServer.inputId);
-                        ownPlayer.playerTransform.position = positionFromServer.position;
-                        ownPlayer.playerTransform.rotation = positionFromServer.rotation;
+                        Vector3 previousPredictedPos = ownPlayer.spaceMovement.baseTransformPos;
+
+                        //Debug.Log("PREDICTED CURRENT POSITION : " + ownPlayer.spaceMovement.baseTransformPos + " with input ID : " + (currentId - 1));
+                        //Debug.Log("ROLL BACK POSITION : " + positionFromServer.position + " with input ID : " + positionFromServer.inputId);
+
+                        ownPlayer.spaceMovement.SetPositionRotation(positionFromServer.position, positionFromServer.rotation);
+                        //ownPlayer.playerTransform.position = positionFromServer.position;
+                        //ownPlayer.playerTransform.rotation = positionFromServer.rotation;
 
                         ownPlayer.predictedInput.RemoveAll(input => input.inputId <= positionFromServer.inputId);
 
@@ -225,8 +249,13 @@ public class NetworkClient : MonoBehaviour
                         for (int i = 0; i < ownPlayer.predictedInput.Count; i++)
                         {
                             ownPlayer.spaceMovement.AdvanceSpaceShip(ownPlayer.predictedInput[i].moveInput, ownPlayer.predictedInput[i].rotation, tickRate);
-                            Debug.Log("ADVANCE STEPS : " + ownPlayer.predictedInput[i].inputId + "To position : " + ownPlayer.playerTransform.position);
+                            //Debug.Log("ADVANCE STEPS : " + ownPlayer.predictedInput[i].inputId + "To position : " + ownPlayer.spaceMovement.baseTransformPos);
                         }
+
+                        Vector3 newPredictedPos = ownPlayer.spaceMovement.baseTransformPos;
+                        ownPlayer.spaceMovement.visualError += previousPredictedPos - newPredictedPos;
+                        Debug.Log("SERV INPUT ID " + positionFromServer.inputId + " PLAYER INPUT ID " + (currentId - 1));
+                        //Debug.Log("Visual ERROR : " + (previousPredictedPos - newPredictedPos));
                     }
                     else
                     {

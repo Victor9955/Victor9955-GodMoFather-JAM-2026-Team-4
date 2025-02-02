@@ -30,13 +30,13 @@ public class NetworkClient : MonoBehaviour
     Dictionary<uint, PlayerData> players = new();
 
     [SerializeField] CinemachineVirtualCamera virtualCamera;
-    [SerializeField] CinemachineBrain virtualBrainCamera;
     [SerializeField] GameObject client;
     [SerializeField] GameObject otherClient;
     [SerializeField] ClientGlobalInfo clientInfo;
     [SerializeField] GameObject deathParticles;
 
     private float tickRate = 1f / 60f;
+    private float previousTickTime;
     private float tickTime;
 
     public bool Connect(string addressString)
@@ -118,17 +118,17 @@ public class NetworkClient : MonoBehaviour
     {
         if (Time.time >= tickTime && ownPlayer.spaceMovement != null)
         {
-            Debug.Log("tick : " + Time.time + " - tick rate : " + tickRate);
+            //Debug.Log("tick : " + Time.time + " - tick rate : " + tickRate);
+            ownPlayer.spaceMovement.AdvanceSpaceShip(tickTime - previousTickTime);
+            previousTickTime = tickTime;
+
             tickTime += tickRate;
-            ownPlayer.spaceMovement.AdvanceSpaceShip(tickRate);
 
             if (ownPlayer.initData != null)
             {
                 //tick reseau d'envoie d'inputs
                 SendPlayerInputs();
             }
-
-            //virtualBrainCamera.ManualUpdate();
         }
     }
 
@@ -254,7 +254,7 @@ public class NetworkClient : MonoBehaviour
 
                         Vector3 newPredictedPos = ownPlayer.spaceMovement.baseTransformPos;
                         ownPlayer.spaceMovement.visualError += previousPredictedPos - newPredictedPos;
-                        Debug.Log("SERV INPUT ID " + positionFromServer.inputId + " PLAYER INPUT ID " + (currentId - 1));
+                        //Debug.Log("SERV INPUT ID " + positionFromServer.inputId + " PLAYER INPUT ID " + (currentId - 1));
                         //Debug.Log("Visual ERROR : " + (previousPredictedPos - newPredictedPos));
                     }
                     else

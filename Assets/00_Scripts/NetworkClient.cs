@@ -121,7 +121,7 @@ public class NetworkClient : MonoBehaviour
             //Debug.Log("tick : " + Time.time + " - tick rate : " + tickRate);
             ownPlayer.spaceMovement.AdvanceSpaceShip(tickTime - previousTickTime);
             previousTickTime = tickTime;
-
+            tickTime = Time.time;
             tickTime += tickRate;
 
             if (ownPlayer.initData != null)

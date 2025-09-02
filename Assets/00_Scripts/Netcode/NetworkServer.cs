@@ -6,13 +6,23 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+public class ServerPlayerData
+{
+    public int id;
+    public string name = "";
+    public PacketBuilder packetBuilder;
+}
 
 public class NetworkServer : MonoBehaviour
 {
     private ENet6.Host enetHost = null;
 
+    Dictionary<Peer, ServerPlayerData> players = new();
+
     private float tickDelay = 1f / 60f;
     private float tickTime;
+
+    private int playersNumber = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -62,16 +72,14 @@ public class NetworkServer : MonoBehaviour
                         break;
 
                     case ENet6.EventType.Connect:
-                        Debug.Log("Connect");
+                        ClientConnected(evt.Peer);
                         break;
 
                     case ENet6.EventType.Disconnect:
                         Debug.Log("Disconnect");
-                        DisconnectPlayer(evt.Peer);
                         break;
 
                     case ENet6.EventType.Receive:
-                        Debug.Log("Receive");
                         byte[] buffer = new byte[1024];
                         evt.Packet.CopyTo(buffer);
                         HandleMessage(evt.Peer, buffer);
@@ -86,14 +94,28 @@ public class NetworkServer : MonoBehaviour
         }
     }
 
+    public void ClientConnected(Peer peer)
+    {
+        ServerPlayerData playerData = new ServerPlayerData();
+        playerData.packetBuilder = new PacketBuilder(peer, 0);
+        playerData.id = playersNumber;
+        playersNumber++;
+        playerData.packetBuilder.SendPacket(new SendPlayerId((byte)playerData.id));
+
+
+        foreach (var player in players.Values)
+        {
+            playerData.packetBuilder.SendPacket(new SendPlayerInit((byte)player.id,player.name));
+            player.packetBuilder.SendPacket(new SendPlayerInit((byte)playerData.id, ""));
+        }
+
+        players.Add(peer, playerData);
+
+    }
+
     private void OnApplicationQuit()
     {
         ENet6.Library.Deinitialize();
-    }
-
-    void DisconnectPlayer(Peer peer)
-    {
-
     }
 
     private void HandleMessage(Peer peer, byte[] buffer)
@@ -102,7 +124,28 @@ public class NetworkServer : MonoBehaviour
         Opcode opcode = (Opcode)Serialization.DeserializeU8(buffer, ref offset);
         switch (opcode)
         {
-                
+            case Opcode.SendName:
+                {
+                    SendName sendNamePacket = new SendName();
+                    sendNamePacket.Deserialize(buffer, ref offset);
+                    players[peer].name = sendNamePacket.name;
+                    break;
+                }
+            case Opcode.SendPlayerState:
+                {
+                    SendPlayerState playerStatePacket = new SendPlayerState();
+                    playerStatePacket.Deserialize(buffer, ref offset);
+                    Debug.Log("Received Pos From " + (int)playerStatePacket.id);
+                    foreach (var player in players.Values)
+                    {
+                        if(player.id != playerStatePacket.id)
+                        {
+                            player.packetBuilder.SendPacket(new SendPlayerState(playerStatePacket.id, playerStatePacket.pos, playerStatePacket.or));
+                        }
+                    }
+                    break;
+                }
+
         }
     }
 }

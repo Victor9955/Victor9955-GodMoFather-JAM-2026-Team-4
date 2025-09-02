@@ -15,6 +15,12 @@ public class FPSCamera : MonoBehaviour
     const string xAxis = "Mouse X"; //Strings in direct code generate garbage, storing and re-using them creates no garbage
     const string yAxis = "Mouse Y";
 
+    private void Start()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
     void Update()
     {
         rotation.x += Input.GetAxis(xAxis) * sensitivity;

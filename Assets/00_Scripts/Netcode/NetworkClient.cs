@@ -5,15 +5,28 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+public class ClientPlayerData
+{
+    public int id;
+    public string name;
+    public LerpToPos lerpToPos;
+    public Transform transform;
+    public Transform transformOr;
+}
 
 public class NetworkClient : MonoBehaviour
 {
     private ENet6.Host enetHost = null;
     private ENet6.Peer? serverPeer = null;
 
-    PacketBuilder packetBuilder = null;
+    public PacketBuilder packetBuilder = null;
+    public int playerId;
+    public Action ReicevedId;
+
     [SerializeField] ClientGlobalInfo clientInfo;
-    [SerializeField] GameObject localClient;
+    [SerializeField] GameObject otherPlayerPrefab;
+
+    Dictionary<int, ClientPlayerData> localPlayers = new();
 
     public bool Connect(string addressString)
     {
@@ -26,7 +39,6 @@ public class NetworkClient : MonoBehaviour
 
         address.Port = 14769;
         Debug.Log("connecting to " + address.GetIP());
-
 
         // On recréé l'host à la connexion pour l'avoir en IPv4 / IPv6 selon l'adresse
         if (enetHost != null)
@@ -58,16 +70,16 @@ public class NetworkClient : MonoBehaviour
         return true;
     }
 
-    void Start()
+    void Awake()
     {
         if (!ENet6.Library.Initialize())
             throw new Exception("Failed to initialize ENet");
 
         if (Connect(clientInfo.ip))
         {
-            
+            packetBuilder = new PacketBuilder(serverPeer.Value,0);
+            packetBuilder.SendPacket(new SendName(clientInfo.playerName));
         }
-
     }
 
     private void OnApplicationQuit()
@@ -102,7 +114,6 @@ public class NetworkClient : MonoBehaviour
                         byte[] buffer = new byte[1024];
                         evt.Packet.CopyTo(buffer);
                         HandleMessage(buffer);
-                        Debug.Log("Receive");
                         break;
 
                     case ENet6.EventType.Timeout:
@@ -118,10 +129,38 @@ public class NetworkClient : MonoBehaviour
     {
         int offset = 0;
         Opcode opcode = (Opcode)Serialization.DeserializeU8(buffer, ref offset);
-        Debug.Log("Opcode" + opcode.ToString());
         switch (opcode)
         {
-            
+            case Opcode.SendPlayerId:
+                {
+                    SendPlayerId sendPlayerId = new SendPlayerId();
+                    sendPlayerId.Deserialize(buffer, ref offset);
+                    playerId = sendPlayerId.id;
+                    ReicevedId?.Invoke();
+                    break;
+                }
+            case Opcode.SendPlayerState:
+                {
+                    SendPlayerState sendPlayerState = new SendPlayerState();
+                    sendPlayerState.Deserialize(buffer, ref offset);
+                    localPlayers[sendPlayerState.id].lerpToPos.pos = sendPlayerState.pos;
+                    localPlayers[sendPlayerState.id].transform.eulerAngles = new Vector3(0, sendPlayerState.or.eulerAngles.y, 0);
+                    break;
+                }
+            case Opcode.SendPlayerInit:
+                {
+                    SendPlayerInit sendPlayerInit = new SendPlayerInit();
+                    sendPlayerInit.Deserialize(buffer, ref offset);
+                    GameObject newPlayer = Instantiate(otherPlayerPrefab);
+                    ClientPlayerData newPlayerData = new ClientPlayerData();
+                    newPlayerData.id = sendPlayerInit.id;
+                    newPlayerData.name = sendPlayerInit.name;
+                    newPlayerData.transform = newPlayer.transform;
+                    newPlayerData.lerpToPos = newPlayer.GetComponent<LerpToPos>();
+
+                    localPlayers.Add(newPlayerData.id, newPlayerData);
+                    break;
+                }
         }
     }
 }

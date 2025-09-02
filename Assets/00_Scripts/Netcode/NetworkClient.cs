@@ -5,33 +5,15 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerData
-{
-    public InitData initData;
-    public Transform playerTransform;
-    public List<PlayerInputData> predictedInput = new List<PlayerInputData>();
-    public ushort score;
-}
-
 
 public class NetworkClient : MonoBehaviour
 {
     private ENet6.Host enetHost = null;
     private ENet6.Peer? serverPeer = null;
 
-    PlayerData ownPlayer;
     PacketBuilder packetBuilder = null;
-    uint currentId = 0;
-
-    Dictionary<uint, PlayerData> players = new();
-
-    [SerializeField] GameObject client;
-    [SerializeField] GameObject otherClient;
     [SerializeField] ClientGlobalInfo clientInfo;
-
-    private float tickRate = 1f / 60f;
-    private float previousTickTime;
-    private float tickTime;
+    [SerializeField] GameObject localClient;
 
     public bool Connect(string addressString)
     {
@@ -83,17 +65,9 @@ public class NetworkClient : MonoBehaviour
 
         if (Connect(clientInfo.ip))
         {
-            ownPlayer = new PlayerData() { initData = new InitData() { clientInitData = new ClientInitData() { matId = (byte)clientInfo.matId, playerName = clientInfo.playerName, skinId = (byte)clientInfo.skinId } } };
-            packetBuilder.SendPacket(new ClientInitData(clientInfo.playerName, clientInfo.skinId, clientInfo.matId));
+            
         }
-        else
-        {
-            GameObject player = Instantiate(client, Vector3.zero, Quaternion.identity);
-            player.GetComponent<ClientSkinLoader>().LoadSkin(clientInfo.skinId, clientInfo.matId);
 
-            ownPlayer = new PlayerData();
-            ownPlayer.playerTransform = player.transform;
-        }
     }
 
     private void OnApplicationQuit()
@@ -147,7 +121,7 @@ public class NetworkClient : MonoBehaviour
         Debug.Log("Opcode" + opcode.ToString());
         switch (opcode)
         {
-
+            
         }
     }
 }

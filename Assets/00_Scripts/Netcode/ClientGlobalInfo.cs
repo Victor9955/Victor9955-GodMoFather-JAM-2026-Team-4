@@ -9,8 +9,6 @@ public class ClientGlobalInfo : ScriptableObject
 {
     public string playerName;
     public string ip = "localhost";
-    public int skinId;
-    public int matId;
 
     public void SetName(TMP_InputField inputField)
     {

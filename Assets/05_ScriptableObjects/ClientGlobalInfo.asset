@@ -16,33 +16,5 @@ MonoBehaviour:
   ip: localhost
   skinId: 5
   matId: 15
-  skinsPrefab:
-  - {fileID: 1122383940670264, guid: 01489deeeb7ca1744877c2e3e590d958, type: 3}
-  - {fileID: 1961908230711334, guid: f120cec36bf54c94fb41c1bcd5534f3d, type: 3}
-  - {fileID: 1721860369327728, guid: bbad770c80b2db742986dcae1946ab2a, type: 3}
-  - {fileID: 1300674149249288, guid: ee040731266332741b7f3a235aa41145, type: 3}
-  - {fileID: 1304531895744914, guid: fb3ddbd3e49630145a54fd458b731d1f, type: 3}
-  - {fileID: 1883019902606728, guid: 3a4cdad4b75b5344eb3a3b6d07e0cb85, type: 3}
-  - {fileID: 1994362409992390, guid: 7aa23275d75eedf468e95cc24b0812b7, type: 3}
-  - {fileID: 1485430186009816, guid: d0272cfaf9f2a9b4bb58c6c8608b6317, type: 3}
-  materials:
-  - {fileID: 2100000, guid: d8dfda64987cff5419b3497636a384d6, type: 2}
-  - {fileID: 2100000, guid: ed3bd972f89e47e42843b13fe786b1bc, type: 2}
-  - {fileID: 2100000, guid: b5bb9a826b3056a48bae3843c804d4a5, type: 2}
-  - {fileID: 2100000, guid: 475a38ac09e45e34190d59c017dadc53, type: 2}
-  - {fileID: 2100000, guid: d6bbd080a39b4854096c1041d680d666, type: 2}
-  - {fileID: 2100000, guid: 8a6d64850f424d3419b8d9df49078ff4, type: 2}
-  - {fileID: 2100000, guid: 0c673a34921a40e41a11b1f96f70b371, type: 2}
-  - {fileID: 2100000, guid: bcaa4f37939a5bf42b5fb1a833c5714e, type: 2}
-  - {fileID: 2100000, guid: eddaffce8e7b618439f29009ac111ebf, type: 2}
-  - {fileID: 2100000, guid: 4e487708cce33b647b13149ee619e642, type: 2}
-  - {fileID: 2100000, guid: 0c12261101fafa741904eae00d611c84, type: 2}
-  - {fileID: 2100000, guid: 880f2e8ae8117924d96d9b5e1d9bb8a9, type: 2}
-  - {fileID: 2100000, guid: 9a116b178d4414b45aa521891f469727, type: 2}
-  - {fileID: 2100000, guid: b905751414f60f04491e10e1cdd4bd34, type: 2}
-  - {fileID: 2100000, guid: 852e08e8e7224cb4b8935e20924d01d4, type: 2}
-  - {fileID: 2100000, guid: e871de2d3a078f445b028b75b70ee154, type: 2}
-  - {fileID: 2100000, guid: ae5678c8e76ecae4fbb0afcbe88edd33, type: 2}
-  - {fileID: 2100000, guid: 0dd46c726e72adc45a13a91d6fc48aa3, type: 2}
-  - {fileID: 2100000, guid: 471818ee249267849bd3a01cfefe564a, type: 2}
-  - {fileID: 2100000, guid: 27935e4f4ec5bd848acb1c16b91ff694, type: 2}
+  skinsPrefab: []
+  materials: []

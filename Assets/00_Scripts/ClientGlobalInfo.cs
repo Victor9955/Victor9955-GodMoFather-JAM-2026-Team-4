@@ -12,9 +12,6 @@ public class ClientGlobalInfo : ScriptableObject
     public int skinId;
     public int matId;
 
-    public List<GameObject> skinsPrefab;
-    public List<Material> materials;
-
     public void SetName(TMP_InputField inputField)
     {
         playerName = inputField.text;

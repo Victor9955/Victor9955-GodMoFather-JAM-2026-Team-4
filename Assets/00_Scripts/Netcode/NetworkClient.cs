@@ -10,6 +10,7 @@ public class ClientPlayerData
     public int id;
     public string name;
     public LerpToPos lerpToPos;
+    public RotateFace rotateFace;
     public Transform transform;
     public Transform transformOr;
 }
@@ -27,8 +28,15 @@ public class NetworkClient : MonoBehaviour
 
     [SerializeField] ClientGlobalInfo clientInfo;
     [SerializeField] GameObject otherPlayerPrefab;
+    [SerializeField] Tape tapePrefab;
 
     Dictionary<int, ClientPlayerData> localPlayers = new();
+    Dictionary<int, Tape> onlineTapes = new();
+
+    public ushort tapeNum = 0;
+    ushort seed;
+
+    [SerializeField] List<Transform> allClues = new();
 
     public bool Connect(string addressString)
     {
@@ -140,6 +148,11 @@ public class NetworkClient : MonoBehaviour
                     SendPlayerId sendPlayerId = new SendPlayerId();
                     sendPlayerId.Deserialize(buffer, ref offset);
                     playerId = sendPlayerId.id;
+                    UnityEngine.Random.InitState(sendPlayerId.seed);
+                    foreach (Transform clue in allClues)
+                    {
+                        clue.GetChild(UnityEngine.Random.Range(0,clue.childCount)).gameObject.SetActive(true);
+                    }
                     ReicevedId?.Invoke();
                     break;
                 }
@@ -149,6 +162,7 @@ public class NetworkClient : MonoBehaviour
                     sendPlayerState.Deserialize(buffer, ref offset);
                     localPlayers[sendPlayerState.id].lerpToPos.pos = sendPlayerState.pos;
                     localPlayers[sendPlayerState.id].transform.eulerAngles = new Vector3(0, sendPlayerState.or.eulerAngles.y, 0);
+                    localPlayers[sendPlayerState.id].rotateFace.Dir = sendPlayerState.or;
                     break;
                 }
             case Opcode.SendPlayerInit:
@@ -161,8 +175,29 @@ public class NetworkClient : MonoBehaviour
                     newPlayerData.name = sendPlayerInit.name;
                     newPlayerData.transform = newPlayer.transform;
                     newPlayerData.lerpToPos = newPlayer.GetComponent<LerpToPos>();
+                    newPlayerData.rotateFace = newPlayer.GetComponentInChildren<RotateFace>();
 
                     localPlayers.Add(newPlayerData.id, newPlayerData);
+                    break;
+                }
+            case Opcode.SpawnTape:
+                {
+                    SpawnTape spawnTapeServer = new SpawnTape();
+                    spawnTapeServer.Deserialize(buffer, ref offset);
+                    if(spawnTapeServer.doModify == 0)
+                    {
+                        Tape cash = Instantiate(tapePrefab, spawnTapeServer.pos, Quaternion.identity);
+                        onlineTapes.Add(spawnTapeServer.tapeId, cash);
+                        tapeNum = spawnTapeServer.tapeId;
+                    }
+                    else if(spawnTapeServer.doModify == 1)
+                    {
+                        onlineTapes[spawnTapeServer.tapeId].AddTapeAtPosOrIsToLong(spawnTapeServer.pos);
+                    }
+                    else if (spawnTapeServer.doModify == 2)
+                    {
+                        onlineTapes[spawnTapeServer.tapeId].Close();
+                    }
                     break;
                 }
         }

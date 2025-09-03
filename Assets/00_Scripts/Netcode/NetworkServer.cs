@@ -23,6 +23,8 @@ public class NetworkServer : MonoBehaviour
     private float tickTime;
 
     private int playersNumber = 0;
+    
+    ushort seed = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -30,6 +32,7 @@ public class NetworkServer : MonoBehaviour
         if (!ENet6.Library.Initialize())
             throw new Exception("Failed to initialize ENet");
 
+        seed = (ushort)UnityEngine.Random.Range(0, 10000);
         CreateServer("localhost");
     }
 
@@ -100,7 +103,7 @@ public class NetworkServer : MonoBehaviour
         playerData.packetBuilder = new PacketBuilder(peer, 0);
         playerData.id = playersNumber;
         playersNumber++;
-        playerData.packetBuilder.SendPacket(new SendPlayerId((byte)playerData.id));
+        playerData.packetBuilder.SendPacket(new SendPlayerId((byte)playerData.id, seed));
 
 
         foreach (var player in players.Values)
@@ -135,7 +138,6 @@ public class NetworkServer : MonoBehaviour
                 {
                     SendPlayerState playerStatePacket = new SendPlayerState();
                     playerStatePacket.Deserialize(buffer, ref offset);
-                    Debug.Log("Received Pos From " + (int)playerStatePacket.id);
                     foreach (var player in players.Values)
                     {
                         if(player.id != playerStatePacket.id)
@@ -147,7 +149,16 @@ public class NetworkServer : MonoBehaviour
                 }
             case Opcode.SpawnTape:
                 {
-
+                    SpawnTape spawnTape = new SpawnTape();
+                    spawnTape.Deserialize(buffer, ref offset);
+                    Debug.Log("Spawn Tapes");
+                    foreach (var player in players.Values)
+                    {
+                        if (player.id != players[peer].id)
+                        {
+                            player.packetBuilder.SendPacket(new SpawnTape(spawnTape.tapeId, spawnTape.pos, spawnTape.doModify));
+                        }
+                    }
                     break;
                 }
 

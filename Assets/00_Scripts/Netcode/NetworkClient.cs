@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ClientPlayerData
 {
@@ -26,17 +27,24 @@ public class NetworkClient : MonoBehaviour
     public PacketBuilder packetBuilder = null;
     public int playerId;
     public Action ReicevedId;
+    public float score = 0f;
 
     [SerializeField] ClientGlobalInfo clientInfo;
     [SerializeField] GameObject otherPlayerPrefab;
     [SerializeField] Tape tapePrefab;
     [SerializeField] TextMeshProUGUI TMPTimer;
+    [SerializeField] ScoreBar playerOne;
+    [SerializeField] ScoreBar playerTwo;
+    [SerializeField] int winSecne;
+    [SerializeField] int looseSecne;
+    float playerOneScore;
+    float playerTwoScore;
 
     Dictionary<int, ClientPlayerData> localPlayers = new();
     Dictionary<int, Tape> onlineTapes = new();
 
     public ushort tapeNum = 0;
-    ushort seed;
+    float timer = 0f;
 
     [SerializeField] List<Transform> allClues = new();
 
@@ -198,10 +206,82 @@ public class NetworkClient : MonoBehaviour
                     }
                     else if (spawnTapeServer.doModify == 2)
                     {
-                        onlineTapes[spawnTapeServer.tapeId].Close();
+                        onlineTapes[spawnTapeServer.tapeId].Close(true);
                     }
                     break;
                 }
+            case Opcode.Timer:
+                {
+                    Timer timerServer = new Timer();
+                    timerServer.Deserialize(buffer, ref offset);
+                    int totalSeconds = Mathf.Max(0, Mathf.FloorToInt(timerServer.timer));
+                    int minutes = totalSeconds / 60;
+                    int seconds = totalSeconds % 60;
+                    TMPTimer.text = $"{minutes:00}:{seconds:00}";
+                    timer = timerServer.timer;
+                    //CheckForTimeWin();
+                    break;
+                }
+            case Opcode.Bar:
+                {
+                    Bar bar = new Bar();
+                    bar.Deserialize(buffer, ref offset);
+                    if(bar.id == 0)
+                    {
+                        playerOne.UpdateBar(bar.amount);
+                        playerOneScore = Mathf.Clamp01(bar.amount);
+                    }
+                    else
+                    {
+                        playerTwo.UpdateBar(bar.amount);
+                        playerTwoScore = Mathf.Clamp01(bar.amount);
+                    }
+                    //CheckForWin();
+                    break;
+                }
         }
+    }
+
+    void CheckForWin()
+    {
+        if(Mathf.FloorToInt(playerOneScore) == 1 && playerId == 0)
+        {
+            Win();
+        }
+        else
+        {
+            Loose();
+        }
+        if (Mathf.FloorToInt(playerTwoScore) == 1 && playerId == 1)
+        {
+            Win();
+        }
+        else
+        {
+            Loose();
+        }
+    }
+
+    void CheckForTimeWin()
+    {
+        timer = Mathf.Max(0f, timer);
+        if (timer == 0f && playerOneScore > playerTwoScore && playerId == 0)
+        {
+            Win();
+        }
+        else
+        {
+            Loose();
+        }
+    }
+
+    void Win()
+    {
+        SceneManager.LoadScene(winSecne);
+    }
+
+    void Loose()
+    {
+        SceneManager.LoadScene(looseSecne);
     }
 }

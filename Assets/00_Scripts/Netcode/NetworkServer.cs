@@ -25,6 +25,9 @@ public class NetworkServer : MonoBehaviour
 
     [SerializeField] float timer = 0f;
 
+
+    bool runTimer = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -32,7 +35,6 @@ public class NetworkServer : MonoBehaviour
             throw new Exception("Failed to initialize ENet");
 
         seed = (ushort)UnityEngine.Random.Range(0, 10000);
-        lastTimer = timer;
         CreateServer("localhost");
     }
 
@@ -52,17 +54,24 @@ public class NetworkServer : MonoBehaviour
 
         return true;
     }
-    float lastTimer;
+    private int lastWholeSecond = -1;
 
     private void Update()
     {
-        timer -= Time.deltaTime;
-        if(lastTimer - 1 >= timer)
+        if(runTimer)
         {
-            lastTimer = timer;
-            foreach (var player in players.Values)
+            timer -= Time.deltaTime;
+
+            int currentWholeSecond = Mathf.FloorToInt(timer);
+
+            if (currentWholeSecond != lastWholeSecond)
             {
-                player.packetBuilder.SendPacket(new Timer(timer));
+                lastWholeSecond = currentWholeSecond;
+
+                foreach (var player in players.Values)
+                {
+                    player.packetBuilder.SendPacket(new Timer(timer));
+                }
             }
         }
     }
@@ -120,6 +129,11 @@ public class NetworkServer : MonoBehaviour
 
         players.Add(peer, playerData);
 
+        if( players.Count >= 2)
+        {
+            runTimer = true;
+        }
+
     }
 
     private void OnApplicationQuit()
@@ -157,13 +171,22 @@ public class NetworkServer : MonoBehaviour
                 {
                     SpawnTape spawnTape = new SpawnTape();
                     spawnTape.Deserialize(buffer, ref offset);
-                    Debug.Log("Spawn Tapes");
                     foreach (var player in players.Values)
                     {
                         if (player.id != players[peer].id)
                         {
                             player.packetBuilder.SendPacket(new SpawnTape(spawnTape.tapeId, spawnTape.pos, spawnTape.doModify));
                         }
+                    }
+                    break;
+                }
+            case Opcode.Bar:
+                {
+                    Bar bar = new Bar();
+                    bar.Deserialize(buffer, ref offset);
+                    foreach (var player in players.Values) 
+                    {
+                        player.packetBuilder.SendPacket(bar);
                     }
                     break;
                 }

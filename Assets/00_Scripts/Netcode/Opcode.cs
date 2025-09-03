@@ -6,5 +6,6 @@ public enum Opcode : byte
     SendPlayerInit,
     SpawnTape,
     ModifyTape,
-    Timer
+    Timer,
+    Bar
 }

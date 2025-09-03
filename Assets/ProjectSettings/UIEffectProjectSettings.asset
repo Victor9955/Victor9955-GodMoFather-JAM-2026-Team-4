@@ -157,6 +157,10 @@ ShaderVariantCollection:
   - first: {fileID: 4800000, guid: 935b7be1c88464d2eb87204fdfab5a38, type: 3}
     second:
       variants:
+      - keywords: EDGE_SHINY
+        passType: 0
+      - keywords: EDGE_SHINY SAMPLING_EDGE_LUMINANCE
+        passType: 0
       - keywords: GLOW_ON SAMPLING_PIXELATION TONE_RETRO UNDERLAY_ON
         passType: 0
       - keywords: GLOW_ON TRANSITION_BURN UNDERLAY_ON
@@ -168,6 +172,8 @@ ShaderVariantCollection:
       - keywords: GLOW_ON TRANSITION_PATTERN UNDERLAY_ON
         passType: 0
       - keywords: GLOW_ON TRANSITION_SHINY UNDERLAY_ON
+        passType: 0
+      - keywords: SAMPLING_EDGE_LUMINANCE
         passType: 0
   - first: {fileID: 4800000, guid: e65241fa80a374114b3f55ed746c04d9, type: 3}
     second:

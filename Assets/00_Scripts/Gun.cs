@@ -38,7 +38,7 @@ public class Gun : MonoBehaviour
                     {
                         if(hit.collider.gameObject.CompareTag("Tape"))
                         {
-                            current.Close();
+                            current.Close(false);
                             if (NetworkClient.instance != null)
                             {
                                 NetworkClient.instance.packetBuilder.SendPacket(new SpawnTape(currentId, hit.point + pointOffset, 2));

@@ -5,6 +5,8 @@ using TMPro;
 using System.Collections.Generic;
 using DG.Tweening;
 
+namespace Jam
+{
 public class Timer : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI timerText;
@@ -70,4 +72,5 @@ public class Timer : MonoBehaviour
             }
         }
     }
+}
 }

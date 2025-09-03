@@ -180,11 +180,38 @@ public class Timer : ISerializeInterface
 
     public void Deserialize(byte[] byteArray, ref int offset)
     {
-        Serialization.DeserializeF32(byteArray, ref offset);
+        timer = Serialization.DeserializeF32(byteArray, ref offset);
     }
 
     public void Serialize(List<byte> byteArray)
     {
         Serialization.SerializeF32(byteArray, timer);
+    }
+}
+
+public class Bar : ISerializeInterface
+{
+    public ushort id;
+    public float amount;
+
+    public Bar() { }
+    public Bar(ushort id, float amount)
+    {
+        this.id = id;
+        this.amount = amount;
+    }
+
+    public Opcode opcode => Opcode.Bar;
+
+    public void Deserialize(byte[] byteArray, ref int offset)
+    {
+        amount = Serialization.DeserializeF32(byteArray, ref offset);
+        id = Serialization.DeserializeU16(byteArray, ref offset);
+    }
+
+    public void Serialize(List<byte> byteArray)
+    {
+        Serialization.SerializeF32(byteArray, amount);
+        Serialization.SerializeU16(byteArray, id);
     }
 }

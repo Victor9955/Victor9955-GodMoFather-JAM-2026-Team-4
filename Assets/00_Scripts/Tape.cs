@@ -28,11 +28,18 @@ public class Tape : MonoBehaviour
         return false;
     }
 
-    public void Close()
+    public void Close(bool fromServer)
     {
         lineRenderer.loop = true;
         StartCoroutine(Fade(Color.green));
-        CheckForObject();
+        if(CheckForObject() && !fromServer)
+        {
+            if(NetworkClient.instance != null)
+            {
+                NetworkClient.instance.score += 0.1f;
+                NetworkClient.instance.packetBuilder.SendPacket(new Bar((ushort)NetworkClient.instance.playerId, NetworkClient.instance.score));
+            }
+        }
     }
 
     IEnumerator Fade(Color color)
@@ -48,19 +55,18 @@ public class Tape : MonoBehaviour
         }
     }
 
-    void CheckForObject()
+    bool CheckForObject()
     {
-        bool touched = false;
         for (int x = 0; x < lineRenderer.positionCount; x++)
         {
             for(int y = 0; y < lineRenderer.positionCount; y++)
             {
                 if (Physics.Raycast(lineRenderer.GetPosition(x),lineRenderer.GetPosition(y) - lineRenderer.GetPosition(x),out RaycastHit hit,Vector3.Distance(lineRenderer.GetPosition(x), lineRenderer.GetPosition(y)), mask))
                 {
-                    touched = true;
+                    return true;
                 }
             }
         }
-        Debug.Log("Did touched :" + touched);
+        return false;
     }
 }

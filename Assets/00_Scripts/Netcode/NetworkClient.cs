@@ -3,6 +3,7 @@ using ENet6;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class ClientPlayerData
@@ -29,6 +30,7 @@ public class NetworkClient : MonoBehaviour
     [SerializeField] ClientGlobalInfo clientInfo;
     [SerializeField] GameObject otherPlayerPrefab;
     [SerializeField] Tape tapePrefab;
+    [SerializeField] TextMeshProUGUI TMPTimer;
 
     Dictionary<int, ClientPlayerData> localPlayers = new();
     Dictionary<int, Tape> onlineTapes = new();

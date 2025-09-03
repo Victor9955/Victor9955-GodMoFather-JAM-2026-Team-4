@@ -19,12 +19,11 @@ public class NetworkServer : MonoBehaviour
 
     Dictionary<Peer, ServerPlayerData> players = new();
 
-    private float tickDelay = 1f / 60f;
-    private float tickTime;
-
     private int playersNumber = 0;
     
     ushort seed = 0;
+
+    [SerializeField] float timer = 0f;
 
     // Start is called before the first frame update
     void Start()
@@ -33,6 +32,7 @@ public class NetworkServer : MonoBehaviour
             throw new Exception("Failed to initialize ENet");
 
         seed = (ushort)UnityEngine.Random.Range(0, 10000);
+        lastTimer = timer;
         CreateServer("localhost");
     }
 
@@ -52,12 +52,18 @@ public class NetworkServer : MonoBehaviour
 
         return true;
     }
+    float lastTimer;
 
     private void Update()
     {
-        if (Time.time >= tickTime)
+        timer -= Time.deltaTime;
+        if(lastTimer - 1 >= timer)
         {
-            tickTime += tickDelay;
+            lastTimer = timer;
+            foreach (var player in players.Values)
+            {
+                player.packetBuilder.SendPacket(new Timer(timer));
+            }
         }
     }
 

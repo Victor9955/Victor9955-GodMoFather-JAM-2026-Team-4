@@ -2,18 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
     public float moveSpeed;
 
-
-    [HideInInspector] public float walkSpeed;
-    [HideInInspector] public float sprintSpeed;
-
     [Header("Keybinds")]
-    public KeyCode jumpKey = KeyCode.Space;
+    [SerializeField] InputAction WASD;
 
     [Header("Ground Check")]
     public float playerHeight;
@@ -33,6 +30,12 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
+        WASD.Enable();
+    }
+
+    private void OnDestroy()
+    {
+        WASD.Disable();
     }
 
     private void Update()
@@ -48,14 +51,15 @@ public class PlayerMovement : MonoBehaviour
 
     private void MyInput()
     {
-        horizontalInput = Input.GetAxisRaw("Horizontal");
-        verticalInput = Input.GetAxisRaw("Vertical");
+        Vector2 input = WASD.ReadValue<Vector2>();
+        horizontalInput = input.x;
+        verticalInput = input.y;
     }
 
     private void MovePlayer()
     {
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
-        rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
+        rb.linearVelocity = new Vector3((moveDirection.normalized * moveSpeed * 10f * Time.deltaTime).x,rb.linearVelocity.y, (moveDirection.normalized * moveSpeed * 10f * Time.deltaTime).z);
     }
 
     private void SpeedControl()

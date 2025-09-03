@@ -1830,7 +1830,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b612572747439a94bbcb40577801c7c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 5
+  moveSpeed: 3
   stopTimer: 1.5
   orientation: {fileID: 918772387}
   circle: {fileID: 0}

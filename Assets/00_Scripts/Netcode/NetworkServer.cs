@@ -145,6 +145,11 @@ public class NetworkServer : MonoBehaviour
                     }
                     break;
                 }
+            case Opcode.SpawnTape:
+                {
+
+                    break;
+                }
 
         }
     }

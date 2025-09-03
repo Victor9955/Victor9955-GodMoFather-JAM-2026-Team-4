@@ -130,3 +130,27 @@ public class SendPlayerInit : ISerializeInterface
         name = Serialization.DeserializeString(byteArray, ref offset);
     }
 }
+
+public class SpawnTape : ISerializeInterface
+{
+    Vector3 pos;
+
+    public SpawnTape() { }
+
+    public SpawnTape(Vector3 pos) 
+    {
+        this.pos = pos; 
+    }
+
+    public Opcode opcode => Opcode.SpawnTape;
+
+    public void Deserialize(byte[] byteArray, ref int offset)
+    {
+        pos = Serialization.DeserializeVector3(byteArray, ref offset);
+    }
+
+    public void Serialize(List<byte> byteArray)
+    {
+        Serialization.SerializeVector3(byteArray, pos);
+    }
+}

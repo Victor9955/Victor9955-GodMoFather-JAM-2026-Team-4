@@ -16,6 +16,8 @@ public class ClientPlayerData
 
 public class NetworkClient : MonoBehaviour
 {
+    public static NetworkClient instance;
+
     private ENet6.Host enetHost = null;
     private ENet6.Peer? serverPeer = null;
 
@@ -80,6 +82,8 @@ public class NetworkClient : MonoBehaviour
             packetBuilder = new PacketBuilder(serverPeer.Value,0);
             packetBuilder.SendPacket(new SendName(clientInfo.playerName));
         }
+
+        instance = this;
     }
 
     private void OnApplicationQuit()

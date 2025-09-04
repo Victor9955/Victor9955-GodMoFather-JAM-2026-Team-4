@@ -31,6 +31,7 @@ public class WeaponSway : MonoBehaviour {
         {
             if (audioTir != null && !GetComponent<AudioSource>().isPlaying)
             {
+                GetComponent<AudioSource>().pitch = UnityEngine.Random.Range(0.8f, 1.1f);
                 GetComponent<AudioSource>().PlayOneShot(audioTir);
             }
 

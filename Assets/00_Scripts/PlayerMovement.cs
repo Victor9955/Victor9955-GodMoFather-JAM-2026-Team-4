@@ -11,6 +11,7 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Keybinds")]
     [SerializeField] InputAction WASD;
+    
 
     [Header("Ground Check")]
     public float playerHeight;
@@ -42,6 +43,16 @@ public class PlayerMovement : MonoBehaviour
     {
         MyInput();
         SpeedControl();
+        if (rb.linearVelocity.x == 0 && rb.linearVelocity.y == 0)
+        {
+            GetComponent<AudioSource>().loop = false;
+            GetComponent<AudioSource>().Play();
+        }
+        else
+        {
+            GetComponent<AudioSource>().loop = true;
+        }
+
     }
 
     private void FixedUpdate()
@@ -60,6 +71,7 @@ public class PlayerMovement : MonoBehaviour
     {
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
         rb.linearVelocity = new Vector3((moveDirection.normalized * moveSpeed * 10f * Time.deltaTime).x,rb.linearVelocity.y, (moveDirection.normalized * moveSpeed * 10f * Time.deltaTime).z);
+       
     }
 
     private void SpeedControl()

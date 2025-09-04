@@ -164,7 +164,7 @@ public class NetworkServer : MonoBehaviour
                     {
                         if(player.id != playerStatePacket.id)
                         {
-                            player.packetBuilder.SendPacket(new SendPlayerState(playerStatePacket.id, playerStatePacket.pos, playerStatePacket.or));
+                            player.packetBuilder.SendPacket(new SendPlayerState(playerStatePacket.id, playerStatePacket.pos, playerStatePacket.or, playerStatePacket.isRunning));
                         }
                     }
                     break;
@@ -184,11 +184,24 @@ public class NetworkServer : MonoBehaviour
                 }
             case Opcode.Bar:
                 {
-                    Bar bar = new Bar();
+                    WinObject bar = new WinObject();
                     bar.Deserialize(buffer, ref offset);
                     foreach (var player in players.Values) 
                     {
                         player.packetBuilder.SendPacket(bar);
+                    }
+                    break;
+                }
+            case Opcode.Attack:
+                {
+                    Attack attack = new Attack();
+                    attack.Deserialize(buffer, ref offset);
+                    foreach (var player in players.Values)
+                    {
+                        if(player.id != players[peer].id)
+                        {
+                            player.packetBuilder.SendPacket(attack);
+                        }
                     }
                     break;
                 }

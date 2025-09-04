@@ -37,8 +37,7 @@ public class Tape : MonoBehaviour
         {
             if(NetworkClient.instance != null)
             {
-                NetworkClient.instance.score += 0.1f;
-                NetworkClient.instance.packetBuilder.SendPacket(new Bar((ushort)NetworkClient.instance.playerId, NetworkClient.instance.score));
+                NetworkClient.instance.packetBuilder.SendPacket(new WinObject((ushort)NetworkClient.instance.playerId));
             }
         }
     }
@@ -56,18 +55,6 @@ public class Tape : MonoBehaviour
         }
         coroutine = null;
     }
-    IEnumerator FadeValid(Color color)
-    {
-        Color colorBase = lineRenderer.material.color;
-        float timer = fadeTimer;
-        while (timer > 0f)
-        {
-            yield return null;
-            lineRenderer.material.color = Color.Lerp(color, colorBase, timer / fadeTimer);
-            timer -= Time.deltaTime;
-        }
-        coroutine = null;
-    }
 
     bool CheckForObject(bool fromServer, int id)
     {
@@ -77,10 +64,6 @@ public class Tape : MonoBehaviour
             {
                 if (Physics.Raycast(lineRenderer.GetPosition(x),lineRenderer.GetPosition(y) - lineRenderer.GetPosition(x),out RaycastHit hit,Vector3.Distance(lineRenderer.GetPosition(x), lineRenderer.GetPosition(y)), mask))
                 {
-                    if(coroutine != null)
-                    {
-                        StopCoroutine(coroutine);
-                    }
                     hit.transform.gameObject.GetComponent<Collider>().enabled = false;
                     hit.transform.gameObject.GetComponentInChildren<Collider>().enabled = false;
                     return true;

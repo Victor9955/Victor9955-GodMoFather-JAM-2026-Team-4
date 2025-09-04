@@ -21,49 +21,59 @@ public class Gun : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0) && Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hit, range, mask))
         {
-            switch (state)
+            if(hit.collider.gameObject.CompareTag("Player"))
             {
-                case GunState.NewTape:
-                    {
-                        current = Instantiate(tape,hit.point + 0.1f * hit.normal, Quaternion.identity);
-                        if (NetworkClient.instance != null)
+                if(NetworkClient.instance)
+                {
+                    NetworkClient.instance.packetBuilder.SendPacket(new Attack());
+                }
+            }
+            else
+            {
+                switch (state)
+                {
+                    case GunState.NewTape:
                         {
-                            NetworkClient.instance.packetBuilder.SendPacket(new SpawnTape(NetworkClient.instance.tapeNum, hit.point + 0.1f * hit.normal, 0,(ushort)NetworkClient.instance.playerId));
-                            currentId = NetworkClient.instance.tapeNum;
-                            NetworkClient.instance.tapeNum++;
-                        }
-                        state = GunState.ContinueTape;
-                    }
-                    break;
-                case GunState.ContinueTape:
-                    {
-                        if(hit.collider.gameObject.CompareTag("Tape"))
-                        {
-                            current.Close(false,NetworkClient.instance.playerId);
+                            current = Instantiate(tape, hit.point + 0.1f * hit.normal, Quaternion.identity);
                             if (NetworkClient.instance != null)
                             {
-                                NetworkClient.instance.packetBuilder.SendPacket(new SpawnTape(currentId, hit.point + pointOffset, 2, (ushort)NetworkClient.instance.playerId));
+                                NetworkClient.instance.packetBuilder.SendPacket(new SpawnTape(NetworkClient.instance.tapeNum, hit.point + 0.1f * hit.normal, 0, (ushort)NetworkClient.instance.playerId));
+                                currentId = NetworkClient.instance.tapeNum;
+                                NetworkClient.instance.tapeNum++;
                             }
-                            current = null;
-                            state = GunState.NewTape;
+                            state = GunState.ContinueTape;
                         }
-                        else
+                        break;
+                    case GunState.ContinueTape:
                         {
-                            if(current.AddTapeAtPosOrIsToLong(hit.point + pointOffset))
+                            if (hit.collider.gameObject.CompareTag("Tape"))
                             {
+                                current.Close(false, NetworkClient.instance.playerId);
+                                if (NetworkClient.instance != null)
+                                {
+                                    NetworkClient.instance.packetBuilder.SendPacket(new SpawnTape(currentId, hit.point + pointOffset, 2, (ushort)NetworkClient.instance.playerId));
+                                }
                                 current = null;
                                 state = GunState.NewTape;
                             }
                             else
                             {
-                                if(NetworkClient.instance != null)
+                                if (current.AddTapeAtPosOrIsToLong(hit.point + pointOffset))
                                 {
-                                    NetworkClient.instance.packetBuilder.SendPacket(new SpawnTape(currentId, hit.point + pointOffset, 1, (ushort)NetworkClient.instance.playerId));
+                                    current = null;
+                                    state = GunState.NewTape;
+                                }
+                                else
+                                {
+                                    if (NetworkClient.instance != null)
+                                    {
+                                        NetworkClient.instance.packetBuilder.SendPacket(new SpawnTape(currentId, hit.point + pointOffset, 1, (ushort)NetworkClient.instance.playerId));
+                                    }
                                 }
                             }
                         }
-                    }
-                    break;
+                        break;
+                }
             }
         }
     }

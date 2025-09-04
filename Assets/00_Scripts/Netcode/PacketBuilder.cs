@@ -59,13 +59,15 @@ public class SendPlayerState : ISerializeInterface
     public byte id;
     public Vector3 pos;
     public Quaternion or;
+    public ushort isRunning;
 
     public SendPlayerState() { }
-    public SendPlayerState(byte id, Vector3 pos, Quaternion or)
+    public SendPlayerState(byte id, Vector3 pos, Quaternion or, ushort isRunning)
     {
         this.id = id;
         this.pos = pos;
         this.or = or;
+        this.isRunning = isRunning;
     }
 
     public Opcode opcode => Opcode.SendPlayerState;
@@ -75,6 +77,7 @@ public class SendPlayerState : ISerializeInterface
         Serialization.SerializeU8(byteArray, id);
         Serialization.SerializeVector3(byteArray, pos);
         Serialization.SerializeQuaternion(byteArray, or);
+        Serialization.SerializeU16(byteArray, isRunning);
     }
 
     public void Deserialize(byte[] byteArray, ref int offset)
@@ -82,6 +85,7 @@ public class SendPlayerState : ISerializeInterface
         id = Serialization.DeserializeU8(byteArray, ref offset);
         pos = Serialization.DeserializeVector3(byteArray, ref offset);
         or = Serialization.DeserializeQuaternion(byteArray, ref offset);
+        isRunning = Serialization.DeserializeU16(byteArray, ref offset);
     }
 }
 
@@ -201,29 +205,41 @@ public class Timer : ISerializeInterface
     }
 }
 
-public class Bar : ISerializeInterface
+public class WinObject : ISerializeInterface
 {
     public ushort id;
-    public float amount;
 
-    public Bar() { }
-    public Bar(ushort id, float amount)
+    public WinObject() { }
+    public WinObject(ushort id)
     {
         this.id = id;
-        this.amount = amount;
     }
 
     public Opcode opcode => Opcode.Bar;
 
     public void Deserialize(byte[] byteArray, ref int offset)
     {
-        amount = Serialization.DeserializeF32(byteArray, ref offset);
         id = Serialization.DeserializeU16(byteArray, ref offset);
     }
 
     public void Serialize(List<byte> byteArray)
     {
-        Serialization.SerializeF32(byteArray, amount);
         Serialization.SerializeU16(byteArray, id);
+    }
+}
+
+public class Attack : ISerializeInterface
+{
+    public Attack() { }
+    public Opcode opcode => Opcode.Attack;
+
+    public void Deserialize(byte[] byteArray, ref int offset)
+    {
+
+    }
+
+    public void Serialize(List<byte> byteArray)
+    {
+
     }
 }

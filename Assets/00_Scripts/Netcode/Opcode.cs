@@ -7,5 +7,6 @@ public enum Opcode : byte
     SpawnTape,
     ModifyTape,
     Timer,
-    Bar
+    Bar,
+    Attack
 }

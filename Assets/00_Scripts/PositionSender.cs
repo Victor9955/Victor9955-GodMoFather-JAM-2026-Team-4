@@ -5,7 +5,7 @@ public class PositionSender : MonoBehaviour
 {
     PacketBuilder packetBuilder;
     public int id;
-
+    Rigidbody rb;
     private void Start()
     {
         NetworkClient cash = FindFirstObjectByType<NetworkClient>();
@@ -13,6 +13,7 @@ public class PositionSender : MonoBehaviour
         {
             cash.ReicevedId += OnReiceived;
         }
+        rb = GetComponent<Rigidbody>();
     }
 
     private void OnReiceived()
@@ -27,9 +28,10 @@ public class PositionSender : MonoBehaviour
 
     private void Update()
     {
-       if(packetBuilder != null && !Input.GetKey(KeyCode.Space))
+       if(packetBuilder != null)
        {
-            packetBuilder.SendPacket(new SendPlayerState((byte)id,transform.position,Camera.main.transform.rotation));
+            ushort isRun = rb.linearVelocity.magnitude > 0f ? (ushort)1 : (ushort)0;
+            packetBuilder.SendPacket(new SendPlayerState((byte)id,transform.position,Camera.main.transform.rotation, isRun));
        }
     }
 }

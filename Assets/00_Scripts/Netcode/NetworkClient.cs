@@ -14,6 +14,7 @@ public class ClientPlayerData
     public int skin;
     public LerpToPos lerpToPos;
     public RotateFace rotateFace;
+    public FranckoAnimation animation;
     public Transform transform;
     public Transform transformOr;
 }
@@ -28,7 +29,6 @@ public class NetworkClient : MonoBehaviour
     public PacketBuilder packetBuilder = null;
     public int playerId;
     public Action ReicevedId;
-    public float score = 0f;
 
     [SerializeField] ClientGlobalInfo clientInfo;
     [SerializeField] GameObject otherPlayerPrefab;
@@ -171,6 +171,7 @@ public class NetworkClient : MonoBehaviour
                     localPlayers[sendPlayerState.id].lerpToPos.pos = sendPlayerState.pos;
                     localPlayers[sendPlayerState.id].transform.eulerAngles = new Vector3(0, sendPlayerState.or.eulerAngles.y, 0);
                     localPlayers[sendPlayerState.id].rotateFace.Dir = sendPlayerState.or;
+                    localPlayers[sendPlayerState.id].animation.isRuning = sendPlayerState.isRunning;
                     break;
                 }
             case Opcode.SendPlayerInit:
@@ -184,7 +185,8 @@ public class NetworkClient : MonoBehaviour
                     newPlayerData.transform = newPlayer.transform;
                     newPlayerData.lerpToPos = newPlayer.GetComponent<LerpToPos>();
                     newPlayerData.rotateFace = newPlayer.GetComponentInChildren<RotateFace>();
-                    newPlayerData.transform.GetComponent<FranckoAnimation>().face.material.mainTexture = clientInfo.skins[sendPlayerInit.skin];
+                    newPlayerData.animation = newPlayer.GetComponentInChildren<FranckoAnimation>();
+                    newPlayerData.animation.face.material.mainTexture = clientInfo.skins[sendPlayerInit.skin];
 
                     localPlayers.Add(newPlayerData.id, newPlayerData);
                     break;
@@ -223,17 +225,23 @@ public class NetworkClient : MonoBehaviour
                 }
             case Opcode.Bar:
                 {
-                    Bar bar = new Bar();
-                    bar.Deserialize(buffer, ref offset);
-                    if(bar.id == 0)
+                    WinObject win = new WinObject();
+                    win.Deserialize(buffer, ref offset);
+                    if(win.id == 0)
                     {
-                        playerOneScore = Mathf.Clamp01(bar.amount);
+                        clientInfo.playerOneScore++;
                     }
                     else
                     {
-                        playerTwoScore = Mathf.Clamp01(bar.amount);
+                        clientInfo.playerTwoScore++;
                     }
-                    //CheckForWin();
+                    break;
+                }
+            case Opcode.Attack:
+                {
+                    Attack attack = new Attack();
+                    attack.Deserialize(buffer, ref offset);
+                    Debug.Log("Attacked");
                     break;
                 }
         }

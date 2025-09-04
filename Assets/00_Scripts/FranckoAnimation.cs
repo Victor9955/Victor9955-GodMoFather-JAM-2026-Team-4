@@ -8,40 +8,19 @@ public class FranckoAnimation : MonoBehaviour
     [SerializeField] List<GameObject> run2;
     [SerializeField] List<GameObject> idle;
     [SerializeField] float interval;
-    [SerializeField] int intervalPos;
     public MeshRenderer face;
-    Vector3 lastPosition;
-    int idleTime = 0;
-
+    public int isRuning = 0;
     float timer = 0f;
 
     bool run = false;
     private void Update()
     {
-        if (Vector3.Distance(transform.position, lastPosition) > 0.01f)
+        if(isRuning == 0)
         {
-            idleTime = Mathf.Clamp(idleTime, 0, intervalPos);
-            lastPosition = transform.position;
-            if(idleTime == intervalPos)
+            foreach (GameObject g in idle)
             {
-                foreach (GameObject g in run1)
-                {
-                    g.SetActive(false);
-                }
-                foreach (GameObject g in run2)
-                {
-                    g.SetActive(false);
-                }
-                foreach (GameObject g in idle)
-                {
-                    g.SetActive(true);
-                }
+                g.SetActive(false);
             }
-        }
-        else
-        {
-            idleTime = 0;
-            lastPosition = transform.position;
             if (timer + interval <= Time.time)
             {
                 timer += interval;
@@ -52,7 +31,7 @@ public class FranckoAnimation : MonoBehaviour
                     {
                         g.SetActive(true);
                     }
-                    foreach (GameObject g in run1)
+                    foreach (GameObject g in run2)
                     {
                         g.SetActive(false);
                     }
@@ -63,12 +42,27 @@ public class FranckoAnimation : MonoBehaviour
                     {
                         g.SetActive(false);
                     }
-                    foreach (GameObject g in run1)
+                    foreach (GameObject g in run2)
                     {
                         g.SetActive(true);
                     }
                 }
-                
+
+            }
+        }
+        else
+        {
+            foreach (GameObject g in run1)
+            {
+                g.SetActive(false);
+            }
+            foreach (GameObject g in run2)
+            {
+                g.SetActive(false);
+            }
+            foreach (GameObject g in idle)
+            {
+                g.SetActive(true);
             }
         }
     }

@@ -3,7 +3,27 @@ guid: 635b3b06136911742bb9ea2b583077d8
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: marche
+    second: {fileID: 2100000, guid: 01bb8211393970f4ca59b9ea14d756be, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: poto
+    second: {fileID: 2100000, guid: fe4292744a71584469d928bab66f2c26, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: poutre
+    second: {fileID: 2100000, guid: 9e5a864541481b54eb1ac8bc30a80b75, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: rampe
+    second: {fileID: 2100000, guid: 73efa8ffc8afc3e42962d7307167caa5, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

@@ -29,12 +29,15 @@ public class PlayerMovement : MonoBehaviour
     Rigidbody rb;
     AudioSource audioSource;
 
+    [SerializeField] ClientGlobalInfo info;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
         rb.freezeRotation = true;
         WASD.Enable();
+        enabled = info.movementNormal;
     }
 
     private void OnDestroy()
@@ -48,6 +51,7 @@ public class PlayerMovement : MonoBehaviour
         SpeedControl();
         if (rb.linearVelocity.x == 0 && rb.linearVelocity.y == 0)
         {
+            if (audioSource.isPlaying && audioSource.loop == false) return;
             audioSource.loop = false;
             audioSource.time = Random.Range(0f, audioSource.clip.length);
             audioSource.pitch = Random.Range(0.8f, 1.1f);
@@ -55,6 +59,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
+            if (audioSource.loop == true) return;
             audioSource.loop = true;
         }
     }

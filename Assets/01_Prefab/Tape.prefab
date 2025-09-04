@@ -240,7 +240,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lineRenderer: {fileID: 6010406316109264988}
-  maxLength: 5
+  maxLength: 3
   fadeTimer: 0.4
   mask:
     serializedVersion: 2

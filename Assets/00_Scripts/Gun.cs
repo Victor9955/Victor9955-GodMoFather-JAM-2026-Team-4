@@ -30,7 +30,7 @@ public class Gun : MonoBehaviour
         if(didHit)
         {
             transparent.gameObject.SetActive(true);
-            transparent.position = hit.point + 0.1f * hit.normal;
+            transparent.position = hit.point;
         }
         else
         {

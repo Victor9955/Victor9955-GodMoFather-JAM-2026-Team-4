@@ -175,10 +175,13 @@ public class NetworkClient : MonoBehaviour
                 {
                     SendPlayerState sendPlayerState = new SendPlayerState();
                     sendPlayerState.Deserialize(buffer, ref offset);
-                    localPlayers[sendPlayerState.id].lerpToPos.pos = sendPlayerState.pos;
-                    localPlayers[sendPlayerState.id].transform.eulerAngles = new Vector3(0, sendPlayerState.or.eulerAngles.y, 0);
-                    localPlayers[sendPlayerState.id].rotateFace.Dir = sendPlayerState.or;
-                    localPlayers[sendPlayerState.id].animation.isRuning = sendPlayerState.isRunning;
+                    if(localPlayers.TryGetValue(sendPlayerState.id, out ClientPlayerData data))
+                    {
+                        data.lerpToPos.pos = sendPlayerState.pos;
+                        data.transform.eulerAngles = new Vector3(0, sendPlayerState.or.eulerAngles.y, 0);
+                        data.rotateFace.Dir = sendPlayerState.or;
+                        data.animation.isRuning = sendPlayerState.isRunning;
+                    }
                     break;
                 }
             case Opcode.SendPlayerInit:

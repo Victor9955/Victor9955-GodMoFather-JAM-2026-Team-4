@@ -17,10 +17,15 @@ public class AutoRunMovement : MonoBehaviour
     [Header("UI")]
     [SerializeField] Image circle;
 
+    AudioSource audioSource;
+    [SerializeField] ClientGlobalInfo info;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
+        audioSource = GetComponent<AudioSource>();
+        enabled = info.movementNormal == false;
     }
 
     private void Update()
@@ -34,19 +39,17 @@ public class AutoRunMovement : MonoBehaviour
             }
             timer = StartCoroutine(Timer());
         }
-        if(Input.GetKeyDown(KeyCode.M))
-        {
-            canMove = !canMove;
-        }
 
         if (rb.linearVelocity.x == 0 && rb.linearVelocity.y == 0)
         {
-            GetComponent<AudioSource>().loop = false;
-            GetComponent<AudioSource>().Play();
+            if(audioSource.isPlaying && audioSource.loop == false) return;
+            audioSource.loop = false;
+            audioSource.Play();
         }
         else
         {
-            GetComponent<AudioSource>().loop = true;
+            if (audioSource.loop == true) return;
+            audioSource.loop = true;
         }
     }
 

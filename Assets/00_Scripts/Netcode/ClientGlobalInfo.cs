@@ -13,6 +13,7 @@ public class ClientGlobalInfo : ScriptableObject
     public float playerOneScore;
     public float playerTwoScore;
     public List<Texture> skins;
+    public bool movementNormal = true;
 
     public void SetName(TMP_InputField inputField)
     {

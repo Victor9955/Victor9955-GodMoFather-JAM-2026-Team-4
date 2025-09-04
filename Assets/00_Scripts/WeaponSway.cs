@@ -7,6 +7,7 @@ public class WeaponSway : MonoBehaviour {
     [SerializeField] private float smooth;
     [SerializeField] private float multiplier;
     [SerializeField] Animation placeClip;
+    [SerializeField] private AudioClip audioTir = null;
 
     private void LateUpdate()
     {
@@ -28,7 +29,14 @@ public class WeaponSway : MonoBehaviour {
     {
         if(Input.GetMouseButton(0))
         {
+            if (audioTir != null && !GetComponent<AudioSource>().isPlaying)
+            {
+                GetComponent<AudioSource>().PlayOneShot(audioTir);
+            }
+
             placeClip.Play();
+           
+
         }
     }
 }

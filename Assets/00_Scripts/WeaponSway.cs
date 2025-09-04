@@ -6,6 +6,7 @@ public class WeaponSway : MonoBehaviour {
     [Header("Sway Settings")]
     [SerializeField] private float smooth;
     [SerializeField] private float multiplier;
+    [SerializeField] Animation placeClip;
 
     private void LateUpdate()
     {
@@ -21,5 +22,13 @@ public class WeaponSway : MonoBehaviour {
 
         // rotate 
         transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRotation, smooth * Time.deltaTime);
+    }
+
+    private void Update()
+    {
+        if(Input.GetMouseButton(0))
+        {
+            placeClip.Play();
+        }
     }
 }

@@ -38,6 +38,16 @@ public class AutoRunMovement : MonoBehaviour
         {
             canMove = !canMove;
         }
+
+        if (rb.linearVelocity.x == 0 && rb.linearVelocity.y == 0)
+        {
+            GetComponent<AudioSource>().loop = false;
+            GetComponent<AudioSource>().Play();
+        }
+        else
+        {
+            GetComponent<AudioSource>().loop = true;
+        }
     }
 
     private void FixedUpdate()

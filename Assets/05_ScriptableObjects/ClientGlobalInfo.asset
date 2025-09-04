@@ -15,8 +15,12 @@ MonoBehaviour:
   playerName: Test
   ip: localhost
   skin: 0
-  playerOneScore: 0
-  playerTwoScore: 0
+  playerOneScore: 5
+  playerTwoScore: 3
+  skinOne: 0
+  skinTwo: 6
+  playerId: 0
+  maxScore: 10
   skins:
   - {fileID: 2800000, guid: f4d9bf6fda3de5043941e453c984050c, type: 3}
   - {fileID: 2800000, guid: 1b317e831266241459e352ce9f767226, type: 3}
@@ -30,3 +34,4 @@ MonoBehaviour:
   - {fileID: 2800000, guid: e636ddaf6b675584dad783c73a246861, type: 3}
   - {fileID: 2800000, guid: 045ed5f2974ec2344867929b9a778771, type: 3}
   - {fileID: 2800000, guid: c9d74b60f737c1c48aef7b9f7520560c, type: 3}
+  movementNormal: 1

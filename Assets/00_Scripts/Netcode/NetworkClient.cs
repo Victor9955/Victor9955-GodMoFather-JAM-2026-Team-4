@@ -163,6 +163,7 @@ public class NetworkClient : MonoBehaviour
                     SendPlayerId sendPlayerId = new SendPlayerId();
                     sendPlayerId.Deserialize(buffer, ref offset);
                     playerId = sendPlayerId.id;
+                    clientInfo.playerId = playerId;
                     UnityEngine.Random.InitState(sendPlayerId.seed);
                     foreach (Transform clue in allClues)
                     {
@@ -197,6 +198,14 @@ public class NetworkClient : MonoBehaviour
                     newPlayerData.rotateFace = newPlayer.GetComponentInChildren<RotateFace>();
                     newPlayerData.animation = newPlayer.GetComponentInChildren<FranckoAnimation>();
                     newPlayerData.animation.face.material.mainTexture = clientInfo.skins[sendPlayerInit.skin];
+                    if(sendPlayerInit.id == 0)
+                    {
+                        clientInfo.skinOne = sendPlayerInit.skin;
+                    }
+                    else
+                    {
+                        clientInfo.skinTwo = sendPlayerInit.skin;
+                    }
 
                     localPlayers.Add(newPlayerData.id, newPlayerData);
                     break;

@@ -10,8 +10,12 @@ public class ClientGlobalInfo : ScriptableObject
     public string playerName;
     public string ip = "localhost";
     public int skin;
-    public float playerOneScore;
-    public float playerTwoScore;
+    public int playerOneScore;
+    public int playerTwoScore;
+    public int skinOne;
+    public int skinTwo;
+    public int playerId;
+    public int maxScore;
     public List<Texture> skins;
     public bool movementNormal = true;
 

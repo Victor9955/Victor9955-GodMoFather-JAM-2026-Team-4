@@ -1,4 +1,7 @@
+using DG.Tweening;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 enum GunState
 {
@@ -12,10 +15,13 @@ public class Gun : MonoBehaviour
     [SerializeField] float range;
     [SerializeField] Vector3 pointOffset;
     [SerializeField] LayerMask mask;
+    [SerializeField] float coolDown = 10f;
+    [SerializeField] Image coolDownImage;
 
     Tape current;
     ushort currentId;
     GunState state;
+    float lastShot = 0f;
 
     void Update()
     {
@@ -23,9 +29,19 @@ public class Gun : MonoBehaviour
         {
             if(hit.collider.gameObject.CompareTag("Player"))
             {
-                if(NetworkClient.instance)
+                if(lastShot + coolDown < Time.time) 
                 {
-                    NetworkClient.instance.packetBuilder.SendPacket(new Attack());
+                    if (NetworkClient.instance)
+                    {
+                        NetworkClient.instance.packetBuilder.SendPacket(new Attack());
+                    }
+                    if (hit.transform.TryGetComponent(out FranckoAnimation animation))
+                    {
+                        StartCoroutine(Stunt(animation.scotchFace));
+                    }
+                    coolDownImage.fillAmount = 1f;
+                    DOTween.To(() => coolDownImage.fillAmount, x => coolDownImage.fillAmount = x, 0f, coolDown);
+                    lastShot = Time.time;
                 }
             }
             else
@@ -76,5 +92,12 @@ public class Gun : MonoBehaviour
                 }
             }
         }
+    }
+
+    IEnumerator Stunt(GameObject face)
+    {
+        face.SetActive(true);
+        yield return new WaitForSeconds(NetworkClient.instance.stuntTimer);
+        face.SetActive(false);
     }
 }

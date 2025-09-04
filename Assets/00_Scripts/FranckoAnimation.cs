@@ -10,6 +10,7 @@ public class FranckoAnimation : MonoBehaviour
     [SerializeField] float interval;
     public MeshRenderer face;
     public int isRuning = 0;
+    public GameObject scotchFace;
     float timer = 0f;
 
     bool run = false;
@@ -64,6 +65,7 @@ public class FranckoAnimation : MonoBehaviour
             {
                 g.SetActive(true);
             }
+            timer = Time.time - interval;
         }
     }
 }

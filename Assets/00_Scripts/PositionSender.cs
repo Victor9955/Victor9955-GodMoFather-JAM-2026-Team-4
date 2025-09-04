@@ -30,7 +30,7 @@ public class PositionSender : MonoBehaviour
     {
        if(packetBuilder != null)
        {
-            ushort isRun = rb.linearVelocity.magnitude > 0f ? (ushort)1 : (ushort)0;
+            ushort isRun = (int)rb.linearVelocity.magnitude > 0 ? (ushort)0 : (ushort)1;
             packetBuilder.SendPacket(new SendPlayerState((byte)id,transform.position,Camera.main.transform.rotation, isRun));
        }
     }

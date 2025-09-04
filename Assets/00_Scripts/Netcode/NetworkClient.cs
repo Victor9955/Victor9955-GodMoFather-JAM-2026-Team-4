@@ -1,7 +1,10 @@
 using Cinemachine;
+using Coffee.UIEffects;
+using DG.Tweening;
 using ENet6;
 using NUnit.Framework;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -35,6 +38,10 @@ public class NetworkClient : MonoBehaviour
     [SerializeField] Tape tapePrefab;
     [SerializeField] TextMeshProUGUI TMPTimer;
     [SerializeField] int finalSecne;
+    [SerializeField] AutoRunMovement autoRun;
+    [SerializeField] PlayerMovement normal;
+    public float stuntTimer = 4;
+    [SerializeField] UIEffect stuntVisual;
     float playerOneScore;
     float playerTwoScore;
 
@@ -241,7 +248,7 @@ public class NetworkClient : MonoBehaviour
                 {
                     Attack attack = new Attack();
                     attack.Deserialize(buffer, ref offset);
-                    Debug.Log("Attacked");
+                    StartCoroutine(Stunt());
                     break;
                 }
         }
@@ -266,5 +273,20 @@ public class NetworkClient : MonoBehaviour
     void FinalScene()
     {
         SceneManager.LoadScene(finalSecne);
+    }
+
+    IEnumerator Stunt()
+    {
+        bool autoRunActive = autoRun.enabled;
+        bool normalActive = normal.enabled;
+        autoRun.enabled = false;
+        normal.enabled = false;
+        Camera.main.GetComponent<FPSCamera>().enabled = false;
+        DOTween.To(() => stuntVisual.transitionRate, x => stuntVisual.transitionRate = x, 0f, 0.4f);
+        yield return new WaitForSeconds(stuntTimer);
+        DOTween.To(() => stuntVisual.transitionRate, x => stuntVisual.transitionRate = x, 1f, 0.4f);
+        Camera.main.GetComponent<FPSCamera>().enabled = true;
+        autoRun.enabled = autoRunActive;
+        normal.enabled = normalActive;
     }
 }

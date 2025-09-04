@@ -176,7 +176,7 @@ LineRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.11628342
+        value: 0.1470604
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -242,6 +242,9 @@ MonoBehaviour:
   lineRenderer: {fileID: 6010406316109264988}
   maxLength: 5
   fadeTimer: 0.4
+  mask:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!135 &1528116962701757098
 SphereCollider:
   m_ObjectHideFlags: 0

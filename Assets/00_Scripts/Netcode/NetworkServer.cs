@@ -19,10 +19,14 @@ public class NetworkServer : MonoBehaviour
 
     Dictionary<Peer, ServerPlayerData> players = new();
 
-    private float tickDelay = 1f / 60f;
-    private float tickTime;
-
     private int playersNumber = 0;
+    
+    ushort seed = 0;
+
+    [SerializeField] float timer = 0f;
+
+
+    bool runTimer = false;
 
     // Start is called before the first frame update
     void Start()
@@ -30,6 +34,7 @@ public class NetworkServer : MonoBehaviour
         if (!ENet6.Library.Initialize())
             throw new Exception("Failed to initialize ENet");
 
+        seed = (ushort)UnityEngine.Random.Range(0, 10000);
         CreateServer("localhost");
     }
 
@@ -49,12 +54,25 @@ public class NetworkServer : MonoBehaviour
 
         return true;
     }
+    private int lastWholeSecond = -1;
 
     private void Update()
     {
-        if (Time.time >= tickTime)
+        if(runTimer)
         {
-            tickTime += tickDelay;
+            timer -= Time.deltaTime;
+
+            int currentWholeSecond = Mathf.FloorToInt(timer);
+
+            if (currentWholeSecond != lastWholeSecond)
+            {
+                lastWholeSecond = currentWholeSecond;
+
+                foreach (var player in players.Values)
+                {
+                    player.packetBuilder.SendPacket(new Timer(timer));
+                }
+            }
         }
     }
 
@@ -100,7 +118,7 @@ public class NetworkServer : MonoBehaviour
         playerData.packetBuilder = new PacketBuilder(peer, 0);
         playerData.id = playersNumber;
         playersNumber++;
-        playerData.packetBuilder.SendPacket(new SendPlayerId((byte)playerData.id));
+        playerData.packetBuilder.SendPacket(new SendPlayerId((byte)playerData.id, seed));
 
 
         foreach (var player in players.Values)
@@ -110,6 +128,11 @@ public class NetworkServer : MonoBehaviour
         }
 
         players.Add(peer, playerData);
+
+        if( players.Count >= 2)
+        {
+            runTimer = true;
+        }
 
     }
 
@@ -135,7 +158,6 @@ public class NetworkServer : MonoBehaviour
                 {
                     SendPlayerState playerStatePacket = new SendPlayerState();
                     playerStatePacket.Deserialize(buffer, ref offset);
-                    Debug.Log("Received Pos From " + (int)playerStatePacket.id);
                     foreach (var player in players.Values)
                     {
                         if(player.id != playerStatePacket.id)
@@ -147,7 +169,25 @@ public class NetworkServer : MonoBehaviour
                 }
             case Opcode.SpawnTape:
                 {
-
+                    SpawnTape spawnTape = new SpawnTape();
+                    spawnTape.Deserialize(buffer, ref offset);
+                    foreach (var player in players.Values)
+                    {
+                        if (player.id != players[peer].id)
+                        {
+                            player.packetBuilder.SendPacket(new SpawnTape(spawnTape.tapeId, spawnTape.pos, spawnTape.doModify));
+                        }
+                    }
+                    break;
+                }
+            case Opcode.Bar:
+                {
+                    Bar bar = new Bar();
+                    bar.Deserialize(buffer, ref offset);
+                    foreach (var player in players.Values) 
+                    {
+                        player.packetBuilder.SendPacket(bar);
+                    }
                     break;
                 }
 

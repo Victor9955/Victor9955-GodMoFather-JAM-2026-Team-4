@@ -5,5 +5,7 @@ public enum Opcode : byte
     SendPlayerId,
     SendPlayerInit,
     SpawnTape,
-    ModifyTape
+    ModifyTape,
+    Timer,
+    Bar
 }

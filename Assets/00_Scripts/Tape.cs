@@ -6,6 +6,7 @@ public class Tape : MonoBehaviour
     [SerializeField] LineRenderer lineRenderer;
     [SerializeField] float maxLength;
     [SerializeField] float fadeTimer = 0.5f;
+    [SerializeField] LayerMask mask;
     bool doFirst = true;
     public bool AddTapeAtPosOrIsToLong(Vector3 pos)
     {
@@ -27,10 +28,18 @@ public class Tape : MonoBehaviour
         return false;
     }
 
-    public void Close()
+    public void Close(bool fromServer)
     {
         lineRenderer.loop = true;
         StartCoroutine(Fade(Color.green));
+        if(CheckForObject() && !fromServer)
+        {
+            if(NetworkClient.instance != null)
+            {
+                NetworkClient.instance.score += 0.1f;
+                NetworkClient.instance.packetBuilder.SendPacket(new Bar((ushort)NetworkClient.instance.playerId, NetworkClient.instance.score));
+            }
+        }
     }
 
     IEnumerator Fade(Color color)
@@ -44,5 +53,20 @@ public class Tape : MonoBehaviour
             lineRenderer.material.color = Color.Lerp(colorBase, color, timer / fadeTimer);
             timer -= Time.deltaTime;
         }
+    }
+
+    bool CheckForObject()
+    {
+        for (int x = 0; x < lineRenderer.positionCount; x++)
+        {
+            for(int y = 0; y < lineRenderer.positionCount; y++)
+            {
+                if (Physics.Raycast(lineRenderer.GetPosition(x),lineRenderer.GetPosition(y) - lineRenderer.GetPosition(x),out RaycastHit hit,Vector3.Distance(lineRenderer.GetPosition(x), lineRenderer.GetPosition(y)), mask))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

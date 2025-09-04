@@ -13,6 +13,7 @@ public class Gun : MonoBehaviour
     [SerializeField] Vector3 pointOffset;
 
     Tape current;
+    ushort currentId;
     GunState state;
 
     void Update()
@@ -24,7 +25,12 @@ public class Gun : MonoBehaviour
                 case GunState.NewTape:
                     {
                         current = Instantiate(tape,hit.point + pointOffset, Quaternion.identity);
-                        //NetworkClient.instance.packetBuilder.SendPacket(new SpawnTape(hit.point + pointOffset));
+                        if (NetworkClient.instance != null)
+                        {
+                            NetworkClient.instance.packetBuilder.SendPacket(new SpawnTape(NetworkClient.instance.tapeNum, hit.point + pointOffset, 0));
+                            currentId = NetworkClient.instance.tapeNum;
+                            NetworkClient.instance.tapeNum++;
+                        }
                         state = GunState.ContinueTape;
                     }
                     break;
@@ -32,7 +38,11 @@ public class Gun : MonoBehaviour
                     {
                         if(hit.collider.gameObject.CompareTag("Tape"))
                         {
-                            current.Close();
+                            current.Close(false);
+                            if (NetworkClient.instance != null)
+                            {
+                                NetworkClient.instance.packetBuilder.SendPacket(new SpawnTape(currentId, hit.point + pointOffset, 2));
+                            }
                             current = null;
                             state = GunState.NewTape;
                         }
@@ -42,6 +52,13 @@ public class Gun : MonoBehaviour
                             {
                                 current = null;
                                 state = GunState.NewTape;
+                            }
+                            else
+                            {
+                                if(NetworkClient.instance != null)
+                                {
+                                    NetworkClient.instance.packetBuilder.SendPacket(new SpawnTape(currentId, hit.point + pointOffset, 1));
+                                }
                             }
                         }
                     }

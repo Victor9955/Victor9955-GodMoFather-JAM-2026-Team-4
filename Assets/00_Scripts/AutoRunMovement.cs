@@ -34,6 +34,10 @@ public class AutoRunMovement : MonoBehaviour
             }
             timer = StartCoroutine(Timer());
         }
+        if(Input.GetKeyDown(KeyCode.M))
+        {
+            canMove = !canMove;
+        }
     }
 
     private void FixedUpdate()

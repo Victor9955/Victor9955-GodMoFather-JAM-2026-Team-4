@@ -84,11 +84,13 @@ public class SendPlayerState : ISerializeInterface
 public class SendPlayerId : ISerializeInterface
 {
     public byte id;
+    public ushort seed;
 
     public SendPlayerId() { }
-    public SendPlayerId(byte id)
+    public SendPlayerId(byte id, ushort seed)
     {
         this.id = id;
+        this.seed = seed;
     }
 
     public Opcode opcode => Opcode.SendPlayerId;
@@ -96,11 +98,13 @@ public class SendPlayerId : ISerializeInterface
     public void Serialize(List<byte> byteArray)
     {
         Serialization.SerializeU8(byteArray, id);
+        Serialization.SerializeU16(byteArray, seed);
     }
 
     public void Deserialize(byte[] byteArray, ref int offset)
     {
         id = Serialization.DeserializeU8(byteArray, ref offset);
+        seed = Serialization.DeserializeU16(byteArray, ref offset);
     }
 }
 
@@ -133,24 +137,81 @@ public class SendPlayerInit : ISerializeInterface
 
 public class SpawnTape : ISerializeInterface
 {
-    Vector3 pos;
-
+    public Vector3 pos;
+    public ushort tapeId;
+    public byte doModify;
     public SpawnTape() { }
 
-    public SpawnTape(Vector3 pos) 
+    public SpawnTape(ushort tapeId, Vector3 pos, byte doModify)
     {
-        this.pos = pos; 
+        this.pos = pos;
+        this.tapeId = tapeId;
+        this.doModify = doModify;
     }
 
     public Opcode opcode => Opcode.SpawnTape;
 
     public void Deserialize(byte[] byteArray, ref int offset)
     {
+        tapeId = Serialization.DeserializeU16(byteArray, ref offset);
         pos = Serialization.DeserializeVector3(byteArray, ref offset);
+        doModify = Serialization.DeserializeU8(byteArray, ref offset);
     }
 
     public void Serialize(List<byte> byteArray)
     {
+        Serialization.SerializeU16(byteArray, tapeId);
         Serialization.SerializeVector3(byteArray, pos);
+        Serialization.SerializeU8(byteArray, doModify);
+    }
+}
+
+public class Timer : ISerializeInterface
+{
+    public float timer;
+
+    public Opcode opcode => Opcode.Timer;
+
+    public Timer() { }
+    public Timer(float timer)
+    {
+        this.timer = timer;
+    }
+
+    public void Deserialize(byte[] byteArray, ref int offset)
+    {
+        timer = Serialization.DeserializeF32(byteArray, ref offset);
+    }
+
+    public void Serialize(List<byte> byteArray)
+    {
+        Serialization.SerializeF32(byteArray, timer);
+    }
+}
+
+public class Bar : ISerializeInterface
+{
+    public ushort id;
+    public float amount;
+
+    public Bar() { }
+    public Bar(ushort id, float amount)
+    {
+        this.id = id;
+        this.amount = amount;
+    }
+
+    public Opcode opcode => Opcode.Bar;
+
+    public void Deserialize(byte[] byteArray, ref int offset)
+    {
+        amount = Serialization.DeserializeF32(byteArray, ref offset);
+        id = Serialization.DeserializeU16(byteArray, ref offset);
+    }
+
+    public void Serialize(List<byte> byteArray)
+    {
+        Serialization.SerializeF32(byteArray, amount);
+        Serialization.SerializeU16(byteArray, id);
     }
 }

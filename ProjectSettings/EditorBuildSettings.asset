@@ -15,11 +15,8 @@ EditorBuildSettings:
     path: Assets/02_Scenes/Server.unity
     guid: 1ae522b0e6642164fb602ab0297e0209
   - enabled: 1
-    path: Assets/02_Scenes/Win.unity
-    guid: a36d661c7762a8f4d9527965f2be0e56
-  - enabled: 1
-    path: Assets/02_Scenes/Loose.unity
-    guid: a9fc7cd75129b17499db96372e73ae58
+    path: Assets/02_Scenes/FinalScene.unity
+    guid: bddedd1c829b13046b9b35203370ce9f
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

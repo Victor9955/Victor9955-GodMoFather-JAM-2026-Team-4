@@ -8,6 +8,7 @@ public class Tape : MonoBehaviour
     [SerializeField] float fadeTimer = 0.5f;
     [SerializeField] LayerMask mask;
     bool doFirst = true;
+    Coroutine coroutine;
     public bool AddTapeAtPosOrIsToLong(Vector3 pos)
     {
         if(doFirst)
@@ -17,7 +18,7 @@ public class Tape : MonoBehaviour
         }
         if (Vector3.Distance(lineRenderer.GetPosition(lineRenderer.positionCount - 1), pos) > maxLength)
         {
-            StartCoroutine(Fade(Color.red));
+            coroutine = StartCoroutine(Fade(Color.red));
             return true;
         }
         if (lineRenderer.loop == false)
@@ -28,11 +29,11 @@ public class Tape : MonoBehaviour
         return false;
     }
 
-    public void Close(bool fromServer)
+    public void Close(bool fromServer, int id)
     {
         lineRenderer.loop = true;
-        StartCoroutine(Fade(Color.green));
-        if(CheckForObject() && !fromServer)
+        coroutine = StartCoroutine(Fade(Color.green));
+        if(CheckForObject(fromServer, id) && !fromServer)
         {
             if(NetworkClient.instance != null)
             {
@@ -53,9 +54,22 @@ public class Tape : MonoBehaviour
             lineRenderer.material.color = Color.Lerp(colorBase, color, timer / fadeTimer);
             timer -= Time.deltaTime;
         }
+        coroutine = null;
+    }
+    IEnumerator FadeValid(Color color)
+    {
+        Color colorBase = lineRenderer.material.color;
+        float timer = fadeTimer;
+        while (timer > 0f)
+        {
+            yield return null;
+            lineRenderer.material.color = Color.Lerp(color, colorBase, timer / fadeTimer);
+            timer -= Time.deltaTime;
+        }
+        coroutine = null;
     }
 
-    bool CheckForObject()
+    bool CheckForObject(bool fromServer, int id)
     {
         for (int x = 0; x < lineRenderer.positionCount; x++)
         {
@@ -63,6 +77,12 @@ public class Tape : MonoBehaviour
             {
                 if (Physics.Raycast(lineRenderer.GetPosition(x),lineRenderer.GetPosition(y) - lineRenderer.GetPosition(x),out RaycastHit hit,Vector3.Distance(lineRenderer.GetPosition(x), lineRenderer.GetPosition(y)), mask))
                 {
+                    if(coroutine != null)
+                    {
+                        StopCoroutine(coroutine);
+                    }
+                    hit.transform.gameObject.GetComponent<Collider>().enabled = false;
+                    hit.transform.gameObject.GetComponentInChildren<Collider>().enabled = false;
                     return true;
                 }
             }

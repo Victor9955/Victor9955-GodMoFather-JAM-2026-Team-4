@@ -11,6 +11,7 @@ public class Gun : MonoBehaviour
     [SerializeField] Tape tape;
     [SerializeField] float range;
     [SerializeField] Vector3 pointOffset;
+    [SerializeField] LayerMask mask;
 
     Tape current;
     ushort currentId;
@@ -18,16 +19,16 @@ public class Gun : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0) && Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hit, range))
+        if (Input.GetMouseButtonDown(0) && Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hit, range, mask))
         {
             switch (state)
             {
                 case GunState.NewTape:
                     {
-                        current = Instantiate(tape,hit.point + pointOffset, Quaternion.identity);
+                        current = Instantiate(tape,hit.point + 0.1f * hit.normal, Quaternion.identity);
                         if (NetworkClient.instance != null)
                         {
-                            NetworkClient.instance.packetBuilder.SendPacket(new SpawnTape(NetworkClient.instance.tapeNum, hit.point + pointOffset, 0));
+                            NetworkClient.instance.packetBuilder.SendPacket(new SpawnTape(NetworkClient.instance.tapeNum, hit.point + 0.1f * hit.normal, 0,(ushort)NetworkClient.instance.playerId));
                             currentId = NetworkClient.instance.tapeNum;
                             NetworkClient.instance.tapeNum++;
                         }
@@ -38,10 +39,10 @@ public class Gun : MonoBehaviour
                     {
                         if(hit.collider.gameObject.CompareTag("Tape"))
                         {
-                            current.Close(false);
+                            current.Close(false,NetworkClient.instance.playerId);
                             if (NetworkClient.instance != null)
                             {
-                                NetworkClient.instance.packetBuilder.SendPacket(new SpawnTape(currentId, hit.point + pointOffset, 2));
+                                NetworkClient.instance.packetBuilder.SendPacket(new SpawnTape(currentId, hit.point + pointOffset, 2, (ushort)NetworkClient.instance.playerId));
                             }
                             current = null;
                             state = GunState.NewTape;
@@ -57,7 +58,7 @@ public class Gun : MonoBehaviour
                             {
                                 if(NetworkClient.instance != null)
                                 {
-                                    NetworkClient.instance.packetBuilder.SendPacket(new SpawnTape(currentId, hit.point + pointOffset, 1));
+                                    NetworkClient.instance.packetBuilder.SendPacket(new SpawnTape(currentId, hit.point + pointOffset, 1, (ushort)NetworkClient.instance.playerId));
                                 }
                             }
                         }

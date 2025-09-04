@@ -30,11 +30,13 @@ public class PacketBuilder
 public class SendName : ISerializeInterface
 {
     public string name;
+    public ushort skin;
 
     public SendName() { }
-    public SendName(string name)
+    public SendName(string name, ushort skin)
     {
         this.name = name;
+        this.skin = skin;
     }
 
     public Opcode opcode => Opcode.SendName;
@@ -42,11 +44,13 @@ public class SendName : ISerializeInterface
     public void Serialize(List<byte> byteArray)
     {
         Serialization.SerializeString(byteArray, name);
+        Serialization.SerializeU16(byteArray, skin);
     }
 
     public void Deserialize(byte[] byteArray, ref int offset)
     {
         name = Serialization.DeserializeString(byteArray, ref offset);
+        skin = Serialization.DeserializeU16(byteArray, ref offset);
     }
 }
 
@@ -112,12 +116,14 @@ public class SendPlayerInit : ISerializeInterface
 {
     public byte id;
     public string name;
+    public ushort skin;
 
     public SendPlayerInit() { }
-    public SendPlayerInit(byte id, string name)
+    public SendPlayerInit(byte id, string name, ushort skin)
     {
         this.id = id;
         this.name = name;
+        this.skin = skin;
     }
 
     public Opcode opcode => Opcode.SendPlayerInit;
@@ -125,12 +131,14 @@ public class SendPlayerInit : ISerializeInterface
     public void Serialize(List<byte> byteArray)
     {
         Serialization.SerializeU8(byteArray, id);
+        Serialization.SerializeU16(byteArray, skin);
         Serialization.SerializeString(byteArray, name);
     }
 
     public void Deserialize(byte[] byteArray, ref int offset)
     {
         id = Serialization.DeserializeU8(byteArray, ref offset);
+        skin = Serialization.DeserializeU16(byteArray, ref offset);
         name = Serialization.DeserializeString(byteArray, ref offset);
     }
 }
@@ -139,14 +147,16 @@ public class SpawnTape : ISerializeInterface
 {
     public Vector3 pos;
     public ushort tapeId;
+    public ushort playerId;
     public byte doModify;
     public SpawnTape() { }
 
-    public SpawnTape(ushort tapeId, Vector3 pos, byte doModify)
+    public SpawnTape(ushort tapeId, Vector3 pos, byte doModify, ushort playerId)
     {
         this.pos = pos;
         this.tapeId = tapeId;
         this.doModify = doModify;
+        this.playerId = playerId;
     }
 
     public Opcode opcode => Opcode.SpawnTape;
@@ -154,6 +164,7 @@ public class SpawnTape : ISerializeInterface
     public void Deserialize(byte[] byteArray, ref int offset)
     {
         tapeId = Serialization.DeserializeU16(byteArray, ref offset);
+        playerId = Serialization.DeserializeU16(byteArray, ref offset);
         pos = Serialization.DeserializeVector3(byteArray, ref offset);
         doModify = Serialization.DeserializeU8(byteArray, ref offset);
     }
@@ -161,6 +172,7 @@ public class SpawnTape : ISerializeInterface
     public void Serialize(List<byte> byteArray)
     {
         Serialization.SerializeU16(byteArray, tapeId);
+        Serialization.SerializeU16(byteArray, playerId);
         Serialization.SerializeVector3(byteArray, pos);
         Serialization.SerializeU8(byteArray, doModify);
     }

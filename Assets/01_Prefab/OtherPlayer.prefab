@@ -335,6 +335,7 @@ MonoBehaviour:
   - {fileID: 4990120966713720553}
   - {fileID: 8935794053350814478}
   interval: 0.2
+  face: {fileID: 1996346832708109143}
 --- !u!1 &6842807774673262144
 GameObject:
   m_ObjectHideFlags: 0

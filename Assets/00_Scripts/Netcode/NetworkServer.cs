@@ -9,6 +9,7 @@ using UnityEngine;
 public class ServerPlayerData
 {
     public int id;
+    public int skin = 0;
     public string name = "";
     public PacketBuilder packetBuilder;
 }
@@ -119,21 +120,7 @@ public class NetworkServer : MonoBehaviour
         playerData.id = playersNumber;
         playersNumber++;
         playerData.packetBuilder.SendPacket(new SendPlayerId((byte)playerData.id, seed));
-
-
-        foreach (var player in players.Values)
-        {
-            playerData.packetBuilder.SendPacket(new SendPlayerInit((byte)player.id,player.name));
-            player.packetBuilder.SendPacket(new SendPlayerInit((byte)playerData.id, ""));
-        }
-
         players.Add(peer, playerData);
-
-        if( players.Count >= 2)
-        {
-            runTimer = true;
-        }
-
     }
 
     private void OnApplicationQuit()
@@ -152,6 +139,21 @@ public class NetworkServer : MonoBehaviour
                     SendName sendNamePacket = new SendName();
                     sendNamePacket.Deserialize(buffer, ref offset);
                     players[peer].name = sendNamePacket.name;
+                    players[peer].skin = sendNamePacket.skin;
+                    if (players.Count >= 2)
+                    {
+                        runTimer = true;
+                        foreach (var player in players.Values)
+                        {
+                            foreach (var other in players.Values)
+                            {
+                                if (player.id != other.id)
+                                {
+                                    player.packetBuilder.SendPacket(new SendPlayerInit((byte)other.id, other.name, (ushort)other.skin));
+                                }
+                            }
+                        }
+                    }
                     break;
                 }
             case Opcode.SendPlayerState:
@@ -175,7 +177,7 @@ public class NetworkServer : MonoBehaviour
                     {
                         if (player.id != players[peer].id)
                         {
-                            player.packetBuilder.SendPacket(new SpawnTape(spawnTape.tapeId, spawnTape.pos, spawnTape.doModify));
+                            player.packetBuilder.SendPacket(new SpawnTape(spawnTape.tapeId, spawnTape.pos, spawnTape.doModify, (ushort)spawnTape.playerId));
                         }
                     }
                     break;

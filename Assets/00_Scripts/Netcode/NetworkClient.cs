@@ -11,6 +11,7 @@ public class ClientPlayerData
 {
     public int id;
     public string name;
+    public int skin;
     public LerpToPos lerpToPos;
     public RotateFace rotateFace;
     public Transform transform;
@@ -33,10 +34,7 @@ public class NetworkClient : MonoBehaviour
     [SerializeField] GameObject otherPlayerPrefab;
     [SerializeField] Tape tapePrefab;
     [SerializeField] TextMeshProUGUI TMPTimer;
-    [SerializeField] ScoreBar playerOne;
-    [SerializeField] ScoreBar playerTwo;
-    [SerializeField] int winSecne;
-    [SerializeField] int looseSecne;
+    [SerializeField] int finalSecne;
     float playerOneScore;
     float playerTwoScore;
 
@@ -98,7 +96,7 @@ public class NetworkClient : MonoBehaviour
         if (Connect(clientInfo.ip))
         {
             packetBuilder = new PacketBuilder(serverPeer.Value,0);
-            packetBuilder.SendPacket(new SendName(clientInfo.playerName));
+            packetBuilder.SendPacket(new SendName(clientInfo.playerName,(ushort)clientInfo.skin));
         }
 
         instance = this;
@@ -186,6 +184,7 @@ public class NetworkClient : MonoBehaviour
                     newPlayerData.transform = newPlayer.transform;
                     newPlayerData.lerpToPos = newPlayer.GetComponent<LerpToPos>();
                     newPlayerData.rotateFace = newPlayer.GetComponentInChildren<RotateFace>();
+                    newPlayerData.transform.GetComponent<FranckoAnimation>().face.material.mainTexture = clientInfo.skins[sendPlayerInit.skin];
 
                     localPlayers.Add(newPlayerData.id, newPlayerData);
                     break;
@@ -206,7 +205,7 @@ public class NetworkClient : MonoBehaviour
                     }
                     else if (spawnTapeServer.doModify == 2)
                     {
-                        onlineTapes[spawnTapeServer.tapeId].Close(true);
+                        onlineTapes[spawnTapeServer.tapeId].Close(true, spawnTapeServer.playerId);
                     }
                     break;
                 }
@@ -219,7 +218,7 @@ public class NetworkClient : MonoBehaviour
                     int seconds = totalSeconds % 60;
                     TMPTimer.text = $"{minutes:00}:{seconds:00}";
                     timer = timerServer.timer;
-                    //CheckForTimeWin();
+                    CheckForTimeWin();
                     break;
                 }
             case Opcode.Bar:
@@ -228,12 +227,10 @@ public class NetworkClient : MonoBehaviour
                     bar.Deserialize(buffer, ref offset);
                     if(bar.id == 0)
                     {
-                        playerOne.UpdateBar(bar.amount);
                         playerOneScore = Mathf.Clamp01(bar.amount);
                     }
                     else
                     {
-                        playerTwo.UpdateBar(bar.amount);
                         playerTwoScore = Mathf.Clamp01(bar.amount);
                     }
                     //CheckForWin();
@@ -244,44 +241,22 @@ public class NetworkClient : MonoBehaviour
 
     void CheckForWin()
     {
-        if(Mathf.FloorToInt(playerOneScore) == 1 && playerId == 0)
+        if(Mathf.FloorToInt(playerOneScore + playerTwoScore) == 1)
         {
-            Win();
-        }
-        else
-        {
-            Loose();
-        }
-        if (Mathf.FloorToInt(playerTwoScore) == 1 && playerId == 1)
-        {
-            Win();
-        }
-        else
-        {
-            Loose();
+            FinalScene();
         }
     }
 
     void CheckForTimeWin()
     {
-        timer = Mathf.Max(0f, timer);
-        if (timer == 0f && playerOneScore > playerTwoScore && playerId == 0)
+        if(Mathf.FloorToInt(timer) == 0)
         {
-            Win();
-        }
-        else
-        {
-            Loose();
+            FinalScene();
         }
     }
 
-    void Win()
+    void FinalScene()
     {
-        SceneManager.LoadScene(winSecne);
-    }
-
-    void Loose()
-    {
-        SceneManager.LoadScene(looseSecne);
+        SceneManager.LoadScene(finalSecne);
     }
 }

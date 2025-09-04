@@ -10,6 +10,9 @@ public class ClientGlobalInfo : ScriptableObject
     public string playerName;
     public string ip = "localhost";
     public int skin;
+    public float playerOneScore;
+    public float playerTwoScore;
+    public List<Texture> skins;
 
     public void SetName(TMP_InputField inputField)
     {

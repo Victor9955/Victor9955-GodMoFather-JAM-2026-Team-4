@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.InputSystem;
+using UnityEngine.Audio;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -26,10 +27,12 @@ public class PlayerMovement : MonoBehaviour
     Vector3 moveDirection;
 
     Rigidbody rb;
+    AudioSource audioSource;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
+        audioSource = GetComponent<AudioSource>();
         rb.freezeRotation = true;
         WASD.Enable();
     }
@@ -45,20 +48,22 @@ public class PlayerMovement : MonoBehaviour
         SpeedControl();
         if (rb.linearVelocity.x == 0 && rb.linearVelocity.y == 0)
         {
-            GetComponent<AudioSource>().loop = false;
-            GetComponent<AudioSource>().Play();
+            audioSource.loop = false;
+            audioSource.time = Random.Range(0f, audioSource.clip.length);
+            audioSource.pitch = Random.Range(0.8f, 1.1f);
+            audioSource.Play();
         }
         else
         {
-            GetComponent<AudioSource>().loop = true;
+            audioSource.loop = true;
         }
-
     }
 
     private void FixedUpdate()
     {
         MovePlayer();
     }
+
 
     private void MyInput()
     {
@@ -70,7 +75,7 @@ public class PlayerMovement : MonoBehaviour
     private void MovePlayer()
     {
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
-        rb.linearVelocity = new Vector3((moveDirection.normalized * moveSpeed * 10f * Time.deltaTime).x,rb.linearVelocity.y, (moveDirection.normalized * moveSpeed * 10f * Time.deltaTime).z);
+        rb.linearVelocity = new Vector3((moveDirection.normalized * moveSpeed * 10f * Time.fixedDeltaTime).x,rb.linearVelocity.y, (moveDirection.normalized * moveSpeed * 10f * Time.fixedDeltaTime).z);
        
     }
 

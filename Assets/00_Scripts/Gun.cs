@@ -17,6 +17,7 @@ public class Gun : MonoBehaviour
     [SerializeField] LayerMask mask;
     [SerializeField] float coolDown = 10f;
     [SerializeField] Image coolDownImage;
+    [SerializeField] Transform transparent;
 
     Tape current;
     ushort currentId;
@@ -25,7 +26,19 @@ public class Gun : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0) && Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hit, range, mask))
+        bool didHit = Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hit, range, mask);
+        if(didHit)
+        {
+            transparent.gameObject.SetActive(true);
+            transparent.position = hit.point + 0.1f * hit.normal;
+        }
+        else
+        {
+            transparent.gameObject.SetActive(false);
+        }
+
+
+        if (Input.GetMouseButtonDown(0) && didHit)
         {
             if(hit.collider.gameObject.CompareTag("Player"))
             {

@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class FranckoAnimation : MonoBehaviour
 {
@@ -14,9 +15,28 @@ public class FranckoAnimation : MonoBehaviour
     float timer = 0f;
 
     bool run = false;
+    AudioSource audioSource;
+
+    private void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
+
     private void Update()
     {
-        if(isRuning == 0)
+        if (isRuning == 1)
+        {
+            audioSource.loop = false;
+            audioSource.time = Random.Range(0f, audioSource.clip.length);
+            audioSource.pitch = Random.Range(0.8f, 1.1f);
+            audioSource.Play();
+        }
+        else
+        {
+            audioSource.loop = true;
+        }
+
+        if (isRuning == 0)
         {
             foreach (GameObject g in idle)
             {

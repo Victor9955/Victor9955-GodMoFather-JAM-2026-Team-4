@@ -49,18 +49,20 @@ public class PlayerMovement : MonoBehaviour
     {
         MyInput();
         SpeedControl();
+
         if (rb.linearVelocity.x == 0 && rb.linearVelocity.y == 0)
         {
             if (audioSource.isPlaying && audioSource.loop == false) return;
             audioSource.loop = false;
-            audioSource.time = Random.Range(0f, audioSource.clip.length);
-            audioSource.pitch = Random.Range(0.8f, 1.1f);
-            audioSource.Play();
+            audioSource.Stop();
         }
         else
         {
             if (audioSource.loop == true) return;
             audioSource.loop = true;
+            audioSource.time = Random.Range(0f, audioSource.clip.length);
+            audioSource.pitch = Random.Range(0.8f, 1.1f);
+            audioSource.Play();
         }
     }
 

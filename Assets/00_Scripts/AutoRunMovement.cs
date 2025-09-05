@@ -44,12 +44,13 @@ public class AutoRunMovement : MonoBehaviour
         {
             if(audioSource.isPlaying && audioSource.loop == false) return;
             audioSource.loop = false;
-            audioSource.Play();
+            audioSource.Stop();
         }
         else
         {
             if (audioSource.loop == true) return;
             audioSource.loop = true;
+            audioSource.Play();
         }
     }
 

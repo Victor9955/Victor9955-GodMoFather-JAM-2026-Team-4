@@ -15,8 +15,8 @@ MonoBehaviour:
   playerName: Test
   ip: localhost
   skin: 0
-  playerOneScore: 5
-  playerTwoScore: 3
+  playerOneScore: 3
+  playerTwoScore: 5
   skinOne: 0
   skinTwo: 6
   playerId: 0

@@ -801,16 +801,28 @@ PrefabInstance:
     m_TransformParent: {fileID: 360679732}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: f7d04339be001fd42ae02e64cf60a542, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f7d04339be001fd42ae02e64cf60a542, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f7d04339be001fd42ae02e64cf60a542, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f7d04339be001fd42ae02e64cf60a542, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 15.583038
+      value: 15.279
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f7d04339be001fd42ae02e64cf60a542, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 8.57734
+      value: 8.58
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f7d04339be001fd42ae02e64cf60a542, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -4.1710687
+      value: -4.022
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f7d04339be001fd42ae02e64cf60a542, type: 3}
       propertyPath: m_LocalRotation.w
@@ -840,6 +852,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: f7d04339be001fd42ae02e64cf60a542, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: dd7827342cfaca1459668a89677f62ff, type: 2}
     - target: {fileID: 919132149155446097, guid: f7d04339be001fd42ae02e64cf60a542, type: 3}
       propertyPath: m_Name
       value: Tapis (1)
@@ -2333,6 +2349,12 @@ MonoBehaviour:
   tape: {fileID: 8490341350800184235, guid: 8a63719ceec8d4c4cbcf3003eda08c80, type: 3}
   range: 5
   pointOffset: {x: 0, y: 0.1, z: 0}
+  mask:
+    serializedVersion: 2
+    m_Bits: 0
+  coolDown: 10
+  coolDownImage: {fileID: 0}
+  transparent: {fileID: 0}
 --- !u!1001 &383149721
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4587,6 +4609,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: d98ccbcd664263849841a3e5b7d6445c, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: a6165addac931f84387be126f2c8cb20, type: 2}
     - target: {fileID: 919132149155446097, guid: d98ccbcd664263849841a3e5b7d6445c, type: 3}
       propertyPath: m_Name
       value: Miroire_Cadre (11)
@@ -4847,7 +4873,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 18832b75085f91545bb0c24b2a6c0c2b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 6.92
+      value: 6.888
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 18832b75085f91545bb0c24b2a6c0c2b, type: 3}
       propertyPath: m_LocalPosition.y
@@ -4855,7 +4881,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 18832b75085f91545bb0c24b2a6c0c2b, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1.58
+      value: -1.696
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 18832b75085f91545bb0c24b2a6c0c2b, type: 3}
       propertyPath: m_LocalRotation.w
@@ -5949,6 +5975,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: f7d04339be001fd42ae02e64cf60a542, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: dd7827342cfaca1459668a89677f62ff, type: 2}
     - target: {fileID: 919132149155446097, guid: f7d04339be001fd42ae02e64cf60a542, type: 3}
       propertyPath: m_Name
       value: Tapis
@@ -6701,15 +6731,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerId: 0
-  score: 0
   clientInfo: {fileID: 11400000, guid: f7b9e831adb112941a9a167599e3f03a, type: 2}
   otherPlayerPrefab: {fileID: 0}
   tapePrefab: {fileID: 0}
   TMPTimer: {fileID: 0}
-  playerOne: {fileID: 0}
-  playerTwo: {fileID: 0}
-  winSecne: 0
-  looseSecne: 0
+  finalSecne: 0
+  autoRun: {fileID: 0}
+  normal: {fileID: 0}
+  stuntTimer: 4
+  stuntVisual: {fileID: 0}
   tapeNum: 0
   allClues: []
 --- !u!4 &1169256187
@@ -8080,6 +8110,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: d98ccbcd664263849841a3e5b7d6445c, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: f940eb0dcac3b714e93bb8859248fb90, type: 2}
     - target: {fileID: 919132149155446097, guid: d98ccbcd664263849841a3e5b7d6445c, type: 3}
       propertyPath: m_Name
       value: Miroire_Cadre (10)
@@ -8136,16 +8170,24 @@ PrefabInstance:
     m_TransformParent: {fileID: 360679732}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: f7d04339be001fd42ae02e64cf60a542, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f7d04339be001fd42ae02e64cf60a542, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f7d04339be001fd42ae02e64cf60a542, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.1489615
+      value: -1.841
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f7d04339be001fd42ae02e64cf60a542, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 8.57734
+      value: 8.58
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f7d04339be001fd42ae02e64cf60a542, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -4.1710687
+      value: -3.996
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f7d04339be001fd42ae02e64cf60a542, type: 3}
       propertyPath: m_LocalRotation.w
@@ -8175,6 +8217,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f7d04339be001fd42ae02e64cf60a542, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: f7d04339be001fd42ae02e64cf60a542, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: dd7827342cfaca1459668a89677f62ff, type: 2}
     - target: {fileID: 919132149155446097, guid: f7d04339be001fd42ae02e64cf60a542, type: 3}
       propertyPath: m_Name
       value: Tapis (2)
@@ -10515,6 +10565,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: f7d04339be001fd42ae02e64cf60a542, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: dd7827342cfaca1459668a89677f62ff, type: 2}
     - target: {fileID: 919132149155446097, guid: f7d04339be001fd42ae02e64cf60a542, type: 3}
       propertyPath: m_Name
       value: Tapis (3)
@@ -11065,6 +11119,7 @@ MonoBehaviour:
   smooth: 40
   multiplier: 1
   placeClip: {fileID: 1921062548}
+  audioTir: {fileID: 0}
 --- !u!1001 &1934832962
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11733,6 +11788,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   orientation: {fileID: 1642613949}
+  info: {fileID: 0}
 --- !u!114 &2039077243
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11749,6 +11805,7 @@ MonoBehaviour:
   stopTimer: 1.5
   orientation: {fileID: 1642613949}
   circle: {fileID: 1885612972}
+  info: {fileID: 0}
 --- !u!114 &2039077244
 MonoBehaviour:
   m_ObjectHideFlags: 0

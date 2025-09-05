@@ -15458,19 +15458,7 @@ MonoBehaviour:
   stuntTimer: 1.5
   stuntVisual: {fileID: 522327934}
   tapeNum: 0
-  allClues:
-  - {fileID: 3344427802428086745}
-  - {fileID: 306256879}
-  - {fileID: 947610852}
-  - {fileID: 1788525716}
-  - {fileID: 518742043}
-  - {fileID: 869480555}
-  - {fileID: 2026200790}
-  - {fileID: 1574251023}
-  - {fileID: 1997231058}
-  - {fileID: 45694084}
-  - {fileID: 555782828}
-  - {fileID: 1101888302}
+  allClues: []
 --- !u!4 &543450651599180184
 Transform:
   m_ObjectHideFlags: 0

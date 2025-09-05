@@ -177,7 +177,7 @@ public class NetworkServer : MonoBehaviour
                     {
                         if (player.id != players[peer].id)
                         {
-                            player.packetBuilder.SendPacket(new SpawnTape(spawnTape.tapeId, spawnTape.pos, spawnTape.doModify, (ushort)spawnTape.playerId));
+                            player.packetBuilder.SendPacket(spawnTape);
                         }
                     }
                     break;

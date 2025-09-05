@@ -1,29 +1,9 @@
 fileFormatVersion: 2
-guid: 62fb15da9c9b7624a80585106accf994
+guid: aec15eac120e008459cdd3175cc02bd6
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects:
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: body
-    second: {fileID: 2100000, guid: daa3dfb66dbefef4289d954411a3e4ed, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: chemise
-    second: {fileID: 2100000, guid: 7c8afcabcc1eb164f95297815f94a4c5, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: eye
-    second: {fileID: 2100000, guid: b72958d10a6421d4583d1a49db2deda5, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: short
-    second: {fileID: 2100000, guid: 36a374bab6c82e94284c2bf0bd469ea1, type: 2}
+  externalObjects: {}
   materials:
     materialImportMode: 2
     materialName: 0

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7750494852914010196}
   m_Layer: 0
   m_Name: couteau
-  m_TagString: Untagged
+  m_TagString: Clue
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

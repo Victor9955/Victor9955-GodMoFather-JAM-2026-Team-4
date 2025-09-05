@@ -56,6 +56,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Box
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 480e465f20732c346bfcb118e4e7604b, type: 3}
+      propertyPath: m_TagString
+      value: Clue
+      objectReference: {fileID: 0}
     - target: {fileID: 7307755593910473826, guid: 480e465f20732c346bfcb118e4e7604b, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 

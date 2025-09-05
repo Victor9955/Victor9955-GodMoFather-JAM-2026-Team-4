@@ -27,6 +27,8 @@ public class FinalSceneManager : MonoBehaviour
 
     void Start()
     {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         StartCoroutine(ScoreAnimation());
         if(info.playerId == 0)
         {

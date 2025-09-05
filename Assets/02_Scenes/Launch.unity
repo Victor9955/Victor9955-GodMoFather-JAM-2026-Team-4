@@ -628,7 +628,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &302028398
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2444,6 +2444,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+      - m_Target: {fileID: 11400000, guid: f7b9e831adb112941a9a167599e3f03a, type: 2}
+        m_TargetAssemblyTypeName: ClientGlobalInfo, Assembly-CSharp
+        m_MethodName: SetMove
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &965239016
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3020,7 +3032,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1175650452
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5009,7 +5021,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Mode :  Chaos'
+  m_text: 'One Button [X]'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9379b7b2236ab4c0e9f8d9f7db9936a8, type: 2}
   m_sharedMaterial: {fileID: -2426719723797185396, guid: 9379b7b2236ab4c0e9f8d9f7db9936a8, type: 2}
@@ -5472,7 +5484,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Mode :  Normal'
+  m_text: 'One Button [   ]'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9379b7b2236ab4c0e9f8d9f7db9936a8, type: 2}
   m_sharedMaterial: {fileID: -2426719723797185396, guid: 9379b7b2236ab4c0e9f8d9f7db9936a8, type: 2}
@@ -7568,6 +7580,18 @@ MonoBehaviour:
       - m_Target: {fileID: 965239012}
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 11400000, guid: f7b9e831adb112941a9a167599e3f03a, type: 2}
+        m_TargetAssemblyTypeName: ClientGlobalInfo, Assembly-CSharp
+        m_MethodName: SetMove
         m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

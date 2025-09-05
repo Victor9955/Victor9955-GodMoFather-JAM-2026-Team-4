@@ -33,4 +33,9 @@ public class ClientGlobalInfo : ScriptableObject
     {
         this.skin = skin;
     }
+
+    public void SetMove(bool move)
+    {
+        movementNormal = move;
+    }
 }

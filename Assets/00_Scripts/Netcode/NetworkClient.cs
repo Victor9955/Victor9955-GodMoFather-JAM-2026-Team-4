@@ -109,6 +109,11 @@ public class NetworkClient : MonoBehaviour
         instance = this;
     }
 
+    private void Start()
+    {
+        clientInfo.maxScore = allClues.Count;
+    }
+
     private void OnApplicationQuit()
     {
         packetBuilder.peer.Disconnect(0);

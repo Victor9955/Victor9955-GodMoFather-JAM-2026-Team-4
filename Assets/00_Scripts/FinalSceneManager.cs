@@ -1,5 +1,6 @@
 using DG.Tweening;
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
@@ -23,8 +24,11 @@ public class FinalSceneManager : MonoBehaviour
     [SerializeField] RawImage faceOneLoose;
     [SerializeField] RawImage faceTwoLoose;
     [SerializeField] Transform mainParent;
+    [SerializeField] TextMeshProUGUI scoreOneTMP;
+    [SerializeField] TextMeshProUGUI scoreTwoTMP;
     [SerializeField] Vector2 wait;
-
+    int scoreOne;
+    int scoreTwo;
     void Start()
     {
         Cursor.lockState = CursorLockMode.None;
@@ -40,6 +44,7 @@ public class FinalSceneManager : MonoBehaviour
             youOne.SetActive(false);
             youTwo.SetActive(true);
         }
+        scoreOne = info.playerOneScore; scoreTwo = info.playerTwoScore;
     }
 
     IEnumerator ScoreAnimation()
@@ -120,5 +125,10 @@ public class FinalSceneManager : MonoBehaviour
                 faceTwoWin.texture = info.skins[info.skinTwo];
             }
         }
+
+        scoreOneTMP.text = scoreOne.ToString();
+        scoreTwoTMP.text = scoreTwo.ToString();
+        scoreOneTMP.gameObject.SetActive(true);
+        scoreTwoTMP.gameObject.SetActive(true);
     }
 }
